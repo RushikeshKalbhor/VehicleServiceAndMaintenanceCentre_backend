@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: vehicleServiceAndMaintenanceCentre
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: false
+  datasource:
+    url: jdbc:mysql://localhost:3310/vsamc
+    username: root
+    password: southampton6835
+    driver-class-name: com.mysql.cj.jdbc.Driver
+server:
+  servlet:
+    context-path: /vehicle
+  port: 8087
+jwt:
+  jwtExpirationInMs: 600000
+
+jwtSecret: 68uptdj43w113ro2266iqkybk0q7otxpr3bxpc47dh35sm04bf
+refreshExpirationDateInMs: 3600000
