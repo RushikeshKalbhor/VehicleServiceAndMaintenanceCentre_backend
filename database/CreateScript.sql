@@ -106,5 +106,5 @@ PACK_KEYS = 0
 ROW_FORMAT = DEFAULT;
 
 INSERT INTO `vehicle_preferences` (`vep_name`, `vep_value`) VALUES ('turn_off_ip_blocking', '0');
-INSERT INTO `vehicle_preferences` (`vep_name`, `vep_value`) VALUES ('login_amount_of_hours_blocked', '24');
+INSERT INTO `vehicle_preferences` (`vep_name`, `vep_value`) VALUES ('login_amount_of_hours_blocked', '12');
 INSERT INTO `vehicle_preferences` (`vep_name`, `vep_value`) VALUES ('password_active_duration', '90');
