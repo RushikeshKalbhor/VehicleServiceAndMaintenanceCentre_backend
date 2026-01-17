@@ -10,11 +10,11 @@ import java.time.LocalDateTime;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer useId;
-
     @Column(name = "use_username", unique = true, nullable = false)
     private String useUsername;
+
+    @Column(name = "use_title")
+    private String useTitle;
 
     @Column(name = "use_firstname", nullable = false)
     private String useFirstName;
@@ -28,8 +28,11 @@ public class User {
     @Column(name = "use_active", precision = 1)
     private Byte useActive;
 
-    @Column(name = "use_email", nullable = false)
+    @Column(name = "use_email")
     private String useEmail;
+
+    @Column(name = "use_mobile")
+    private String useMobile;
 
     @Column(name = "use_password", nullable = false)
     private String usePassword;
@@ -52,20 +55,20 @@ public class User {
     @Column(name = "use_created", nullable = false)
     private java.time.LocalDateTime useCreated;
 
-    public Integer getUseId() {
-        return useId;
-    }
-
-    public void setUseId(Integer useId) {
-        this.useId = useId;
-    }
-
     public String getUseUsername() {
         return useUsername;
     }
 
     public void setUseUsername(String useUsername) {
         this.useUsername = useUsername;
+    }
+
+    public String getUseTitle() {
+        return useTitle;
+    }
+
+    public void setUseTitle(String useTitle) {
+        this.useTitle = useTitle;
     }
 
     public String getUseFirstName() {
@@ -106,6 +109,14 @@ public class User {
 
     public void setUseEmail(String useEmail) {
         this.useEmail = useEmail;
+    }
+
+    public String getUseMobile() {
+        return useMobile;
+    }
+
+    public void setUseMobile(String useMobile) {
+        this.useMobile = useMobile;
     }
 
     public String getUsePassword() {

@@ -1,5 +1,5 @@
 create schema vsamc;
-use vsamc
+use vsamc;
 
 -- -----------------------------------------------------
 -- Table `authentication_tokens`
@@ -47,13 +47,14 @@ COMMENT = 'This table will store instances of login , records of every invalid l
 -- Table `users`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `users` (
-  `use_id` MEDIUMINT(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
   `use_username` VARCHAR(40) NOT NULL COMMENT 'This column stores the user username as primary key.',
+  `use_title` VARCHAR(10) NULL COMMENT 'This column store the users title'
   `use_firstname` VARCHAR(60) NOT NULL COMMENT 'This column stores the user first name.',
   `use_surname` VARCHAR(60) NOT NULL COMMENT 'This column stores the user sur name.',
   `use_fullname` VARCHAR(150) NOT NULL COMMENT 'This column stores the user full name.',
   `use_active` TINYINT(1) NULL DEFAULT 1 COMMENT 'This column stores the flag if the user is active.(e.g. 1 for active)',
   `use_email` VARCHAR(150) NULL COMMENT 'This column stores the users email address.',
+  `use_mobile` VARCHAR(20) NULL COMMENT 'This column stores the users mobile number',
   `use_password` VARCHAR(64) NULL COMMENT 'This column stores the password of user',
   `use_password_last_modified` DATE NULL COMMENT 'This column stores the date of the user\'s last password update.',
   `use_last_loggedin_date` DATE NULL COMMENT 'This column stores the date the user last logged in.',
@@ -61,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `use_login_attempts` VARCHAR(10) NULL DEFAULT 0 COMMENT 'This column stores the successive login attempts with your username. Since last successful login.',
   `use_created_by` VARCHAR(40) NOT NULL COMMENT 'This column stores the username of the user that created this user account.',
   `use_created` DATETIME NOT NULL COMMENT 'This column stores the timestamp of user account was created.',
-PRIMARY KEY (`use_id`))
+PRIMARY KEY (`use_username`))
 ENGINE = InnoDB
 COMMENT = 'This table stores user information.';
 
@@ -97,6 +98,20 @@ ENGINE = InnoDB
 COMMENT = 'This table stores the details of vehicle glitches.';
 
 -- -----------------------------------------------------
+-- Table `user_groups`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `user_groups` (
+  `usg_id` MEDIUMINT(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'It will store the primary key',
+  `usg_name` VARCHAR(60) NOT NULL COMMENT 'It will store the user role name',
+  `usg_description` VARCHAR(255) NULL COMMENT 'It will store the user role description',
+  `usg_type` VARCHAR(60) NULL COMMENT 'It will store the user role type e.g \'module access',
+  `usg_created` DATETIME NOT NULL COMMENT 'It will store the when record is created',
+  PRIMARY KEY (`usg_id`))
+COMMENT = 'This table hold the user group data'
+PACK_KEYS = 0
+ROW_FORMAT = DEFAULT;
+
+-- -----------------------------------------------------
 -- Table `vehicle_preferences`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `vehicle_preferences` (
@@ -108,6 +123,3 @@ COMMENT = 'This table will contain preferences for default texting username and 
 PACK_KEYS = 0
 ROW_FORMAT = DEFAULT;
 
-INSERT INTO `vehicle_preferences` (`vep_name`, `vep_value`) VALUES ('turn_off_ip_blocking', '0');
-INSERT INTO `vehicle_preferences` (`vep_name`, `vep_value`) VALUES ('login_amount_of_hours_blocked', '12');
-INSERT INTO `vehicle_preferences` (`vep_name`, `vep_value`) VALUES ('password_active_duration', '90');

@@ -18,6 +18,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -56,23 +57,14 @@ public class VehicleGlitchHandler {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).contentType(MediaType.APPLICATION_JSON).body(exceptionJson);
         } else if (!(exception instanceof UsernameNotFoundException) && !(exception instanceof BadCredentialsException) && exception.getStackTrace().length > 0) {
             Integer vegId = vehicleGlitchHandlingService.handleExceptions(exception);
-            exceptionJson.setCegId(vegId);
+            exceptionJson.setVegId(vegId);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionJson);
         }
-        System.out.println(exception.getMessage());
         JSONObject getMessage = new JSONObject(exception.getMessage());
-        JSONObject validationCode = getMessage.getJSONObject("validationCode");
-        String messageKey = validationCode.getString("messageKey");
-
-        if (validationCode.has("parameters")) {
-            int parameters = validationCode.getInt("parameters");
-            errorMap.put("parameters", String.valueOf(parameters));
-        }
-
-        errorMap.put("messageKey", messageKey);
+        String messageKey = getMessage.getString("validationCode");
 
         ValidationExceptionJson validationExceptionJson = new ValidationExceptionJson();
-        validationExceptionJson.setParameters(errorMap);
+        validationExceptionJson.setMessageKey(messageKey);
         exceptionJson.setValidationException(validationExceptionJson);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionJson);
     }
@@ -219,6 +211,23 @@ public class VehicleGlitchHandler {
         logger.error("An error occurred: Authorization Denied ", exception);
         ExceptionJson exceptionJson = new ExceptionJson();
         exceptionJson.setValidationException("Authorization Denied");
+        return exceptionJson;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ExceptionJson handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+        logger.error("An error occurred", exception);
+        ExceptionJson exceptionJson = new ExceptionJson();
+        Map<String, String> errorMap = new HashMap<>();
+        exception.getBindingResult().getFieldErrors().forEach(error ->
+                errorMap.put(error.getField(), error.getDefaultMessage())
+        );
+        exception.getBindingResult().getGlobalErrors()
+                .forEach(error -> errorMap.put(error.getObjectName(), error.getDefaultMessage()));
+        ValidationExceptionJson validationExceptionJson = new ValidationExceptionJson();
+        validationExceptionJson.setParameters(errorMap);
+        exceptionJson.setValidationException(validationExceptionJson);
         return exceptionJson;
     }
 }

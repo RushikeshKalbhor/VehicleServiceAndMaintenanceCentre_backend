@@ -34,10 +34,7 @@ public class VehicleGlitchHandlingService {
 
         Optional<VehicleGlitch> vehicleGlitch = saveVehicleGlitch(exception, userDetails);
 
-        if(userDetails != null && vehicleGlitch.isPresent()) {
-            return vehicleGlitch.get().getVegId();
-        }
-        return null;
+        return vehicleGlitch.map(VehicleGlitch::getVegId).orElse(null);
     }
 
     Optional<VehicleGlitch> saveVehicleGlitch(Exception exception, UserDetail userDetails){

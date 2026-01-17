@@ -2,6 +2,7 @@ package com.example.vehicleservice.admin.repository;
 
 import com.example.vehicleservice.admin.model.User;
 import com.example.vehicleservice.config.records.UserLoginDetailsRecord;
+import com.example.vehicleservice.config.records.UserRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -27,6 +28,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Integer updateUseLastLoggedinDateAndUseLoggedInByUseUsername(String useUsername, Byte useLoggedIn);
 
     @Modifying
-    @Query("update User set useLoginAttempts = useLoginAttempts + 1 where useUsername = :useUsername")
-    void updateUseLoginAttempts(@Param(value = "useUsername") String useUsername);
+    @Query("update User set useLoginAttempts = :useLoginAttempts where useUsername = :useUsername")
+    void updateUseLoginAttempts(String useUsername, Integer useLoginAttempts);
+
+    @Query("SELECT new com.example.vehicleservice.config.records.UserRecord(useUsername, useActive, usePasswordLastModified) FROM User WHERE useUsername = :useUsername")
+    UserRecord findUseActiveByUseUsername(String useUsername);
+
+    @Query("SELECT useLoginAttempts FROM User where useUsername = :useUsername")
+    Integer findUseLoginAttemptsByUseUsername(String useUsername);
 }

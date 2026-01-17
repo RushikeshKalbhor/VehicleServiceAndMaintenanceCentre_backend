@@ -9,16 +9,16 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ExceptionJson {
 
-    private Integer cegId;
+    private Integer vegId;
     private Map<String, String> parameters;
     private ArrayList<ValidationExceptionJson> validationException = new ArrayList<>();
 
-    public Integer getCegId() {
-        return cegId;
+    public Integer getVegId() {
+        return vegId;
     }
 
-    public void setCegId(Integer cegId) {
-        this.cegId = cegId;
+    public void setVegId(Integer vegId) {
+        this.vegId = vegId;
     }
 
     public List<ValidationExceptionJson> getValidationException() {

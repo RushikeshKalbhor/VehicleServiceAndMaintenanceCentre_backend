@@ -9,7 +9,9 @@ import com.example.vehicleservice.config.JwtUtil;
 import com.example.vehicleservice.config.UserDetailsServiceImpl;
 import com.example.vehicleservice.config.json.LoginJson;
 import com.example.vehicleservice.config.json.UserRegisterJson;
+import com.example.vehicleservice.config.records.UserRecord;
 import com.example.vehicleservice.config.security.UserDetail;
+import com.example.vehicleservice.config.util.AuthUtil;
 import com.example.vehicleservice.general.DisplayRecordStatus;
 import com.example.vehicleservice.general.json.ResponseJson;
 import com.example.vehicleservice.general.util.ValidationUtil;
@@ -22,7 +24,6 @@ import org.springframework.security.authentication.InternalAuthenticationService
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -46,12 +47,15 @@ public class AuthService {
     private final BlockingIpAddressDetailRepository blockingIpAddressDetailRepository;
     private final FailedLoginRepository failedLoginRepository;
     private final AuthenticationTokenRepository authenticationTokenRepository;
+    private final UserRoleRepository userRoleRepository;
+    private final AuthUtil authUtil;
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil,
                        UserDetailsServiceImpl userDetailsServiceImpl, AuthenticationManager authenticationManager,
                        HttpServletRequest request, VehiclePreferenceRepository vehiclePreferenceRepository,
                        ValidationUtil validationUtil, BlockingIpAddressDetailRepository blockingIpAddressDetailRepository,
-                       FailedLoginRepository failedLoginRepository, AuthenticationTokenRepository authenticationTokenRepository) {
+                       FailedLoginRepository failedLoginRepository, AuthenticationTokenRepository authenticationTokenRepository,
+                       UserRoleRepository userRoleRepository, AuthUtil authUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
@@ -63,22 +67,25 @@ public class AuthService {
         this.blockingIpAddressDetailRepository = blockingIpAddressDetailRepository;
         this.failedLoginRepository = failedLoginRepository;
         this.authenticationTokenRepository = authenticationTokenRepository;
+        this.userRoleRepository = userRoleRepository;
+        this.authUtil = authUtil;
     }
 
     public ResponseJson register(UserRegisterJson userRegisterJson) {
         User user = new User();
         user.setUseUsername(userRegisterJson.getUseUsername());
+        user.setUseTitle(userRegisterJson.getUseTitle());
         user.setUseFirstName(userRegisterJson.getUseFirstName());
         user.setUseSurname(userRegisterJson.getUseSurname());
         user.setUseFullName(userRegisterJson.getUseFirstName() + " " + userRegisterJson.getUseSurname());
         user.setUseEmail(userRegisterJson.getUseEmail());
+        user.setUseMobile(userRegisterJson.getUseMobile());
         user.setUsePassword(passwordEncoder.encode(userRegisterJson.getUsePassword()));
         user.setUsePasswordLastModified(LocalDate.now());
         userRepository.save(user);
         return new ResponseJson("user.registered.success");
     }
 
-    @Transactional
     public ResponseJson login(LoginJson loginJson) {
         ResponseJson responseJson = new ResponseJson();
         User user = userRepository.findByUseUsername(loginJson.getUsername());
@@ -99,7 +106,7 @@ public class AuthService {
             responseJson.setValidationCode("login.fail");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseJson).getBody();
         }
-        responseJson = validateLoginCorrectCredentials(loginJson.getUsername(), remoteAddress, responseJson);
+        responseJson = validateLoginCorrectCredentials(loginJson.getUsername(), responseJson);
 
         if(responseJson.getValidationCode() == null) {
             responseJson = checkPasswordActiveDuration(loginJson.getUsername(), responseJson);
@@ -116,7 +123,8 @@ public class AuthService {
             updateAuthenticationToken(loginJson.getUsername(), jwt, refreshToken, uuid);
 
             // mark 1 for user is active
-            updateUserLoginDetails(loginJson.getUsername(), Byte.valueOf("1"));
+            authUtil.updateUserMarkAsActive(loginJson.getUsername(), Byte.valueOf("1"));
+
             // set response
             buildAuthenticationResponse(jwt, refreshToken, responseJson);
             return ResponseEntity.status(HttpStatus.OK).body(responseJson).getBody();
@@ -124,9 +132,33 @@ public class AuthService {
         throw new BadCredentialsException(responseJson.toString());
     }
 
-    public ResponseJson validateLoginCorrectCredentials(String username, String remoteAddress, ResponseJson responseJson) {
+    public ResponseJson validateLoginCorrectCredentials(String username, ResponseJson responseJson) {
 
+        UserRecord userRecord = userRepository.findUseActiveByUseUsername(username);
+        if (userRecord != null) {
+            if (!Byte.valueOf("1").equals(userRecord.useActive())) {
+                responseJson.setValidationCode("user.not.active");
+                return responseJson;
+            }
 
+            String passwordActiveDuration = vehiclePreferenceRepository.findVehiclePreferenceCecValueByCecName("password_active_duration");
+
+            if (passwordActiveDuration != null && Integer.parseInt(passwordActiveDuration) > 0) {
+                int daysSincePasswordModified = (int) ChronoUnit.DAYS.between(userRecord.usePasswordLastModified(), LocalDate.now());
+
+                if(daysSincePasswordModified >= Integer.parseInt(passwordActiveDuration)) {
+                    responseJson.setValidationCode("user.password.is.expired");
+                    return responseJson;
+                }
+            }
+
+            List<String> userRolesList = userRoleRepository.findUsrNameByUsrUseUsername(username);
+
+            if (userRolesList.isEmpty()) {
+                responseJson.setValidationCode("user.has.not.user.role");
+                return responseJson;
+            }
+        }
         return new ResponseJson();
     }
 
@@ -139,11 +171,6 @@ public class AuthService {
         responseJson.setValidationCode("user.login.success");
     }
 
-    @Transactional
-    public void updateUserLoginDetails(String username, Byte login) {
-        userRepository.updateUseLastLoggedinDateAndUseLoggedInByUseUsername(username, login);
-    }
-
     public ResponseJson checkPasswordActiveDuration(String username, ResponseJson responseJson) {
         String passwordActiveDuration = vehiclePreferenceRepository.findVehiclePreferenceCecValueByCecName("password_active_duration");
 
@@ -152,7 +179,7 @@ public class AuthService {
             int daysSincePasswordModified = (int) ChronoUnit.DAYS.between(datePasswordLastModified, LocalDate.now());
 
             if(daysSincePasswordModified >= Integer.parseInt(passwordActiveDuration)) {
-                responseJson.setValidationCode("area.login.reminder.passwordexpired");
+                responseJson.setValidationCode("user.password.is.expired");
             }
         }
         return responseJson;
@@ -163,17 +190,9 @@ public class AuthService {
         if(responseJson.getValidationCode() != null) {
             throw new BadCredentialsException(responseJson.toString());
         }
-        responseJson = validateMaximumLoginAttemptsIncorrectCredentials(username, responseJson);
+        responseJson = authUtil.validateMaximumLoginAttemptsIncorrectCredentials(username, responseJson);
         return responseJson;
     }
-
-    @Transactional
-    public ResponseJson validateMaximumLoginAttemptsIncorrectCredentials(String username, ResponseJson responseJson) {
-        userRepository.updateUseLoginAttempts(username);
-        responseJson.setValidationCode("username.or.password.incorrect");
-        return responseJson;
-    }
-
 
     public ResponseJson checkIpAddressBlocking(String ipAddress, String username, ResponseJson responseJson){
 

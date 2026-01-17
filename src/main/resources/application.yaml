@@ -18,3 +18,9 @@ jwt:
 
 jwtSecret: 68uptdj43w113ro2266iqkybk0q7otxpr3bxpc47dh35sm04bf
 refreshExpirationDateInMs: 3600000
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
