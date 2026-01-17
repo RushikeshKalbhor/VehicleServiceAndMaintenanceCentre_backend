@@ -48,7 +48,7 @@ COMMENT = 'This table will store instances of login , records of every invalid l
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `users` (
   `use_username` VARCHAR(40) NOT NULL COMMENT 'This column stores the user username as primary key.',
-  `use_title` VARCHAR(10) NULL COMMENT 'This column store the users title'
+  `use_title` VARCHAR(10) NULL COMMENT 'This column store the users title',
   `use_firstname` VARCHAR(60) NOT NULL COMMENT 'This column stores the user first name.',
   `use_surname` VARCHAR(60) NOT NULL COMMENT 'This column stores the user sur name.',
   `use_fullname` VARCHAR(150) NOT NULL COMMENT 'This column stores the user full name.',

@@ -1,6 +1,9 @@
 package com.example.vehicleservice.config;
 
+import com.example.vehicleservice.admin.model.AuthenticationToken;
 import com.example.vehicleservice.config.security.UserDetail;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -12,10 +15,8 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 
 import static org.apache.commons.text.CharacterPredicates.DIGITS;
 import static org.apache.commons.text.CharacterPredicates.LETTERS;
@@ -84,5 +85,71 @@ public class JwtUtil {
                 .compact();
     }
 
+    //check if the token has expired
+    public boolean isTokenExpired(String token) {
+        final Date expiration = getExpirationDateFromToken(token);
+        return expiration.before(new Date());
+    }
+
+    //retrieve expiration date from jwt token
+    public Date getExpirationDateFromToken(String token) {
+        return getClaimFromToken(token, Claims::getExpiration);
+    }
+
+    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = getAllClaimsFromToken(token);
+        return claimsResolver.apply(claims);
+    }
+
+    //for retrieving any information from token we will need the secret key
+    public Claims getAllClaimsFromToken(String token) {
+        return Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    public String getUsernameFromToken(String token) {
+        return getClaimFromToken(token, Claims::getSubject);
+    }
+
+    public List<GrantedAuthority> getRolesFromToken(String token) {
+        Claims claims = getAllClaimsFromToken(token);
+        String userRoles =  (String) claims.get("userRoles");
+        if (userRoles == null || userRoles.isBlank()) {
+            return List.of();
+        }
+        return AuthorityUtils.createAuthorityList(userRoles.split(","));
+    }
+
+    public boolean validateTokenAgainstAuthentication(UserDetail userDetail, AuthenticationToken authenticationToken) {
+        try {
+
+            //Parse stored token claims
+            Claims claims = getAllClaimsFromToken(authenticationToken.getAtkJwtToken());
+
+            // username check
+            if (!userDetail.getUsername().equals(claims.getSubject())) {
+                return false;
+            }
+
+            //Compare roles
+            List<String> tokenRoles = getRolesFromToken(authenticationToken.getAtkJwtToken()).stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .toList();
+
+            List<String> userRoles = userDetail.getAuthorities() == null
+                    ? List.of()
+                    :userDetail.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .toList();
+
+            return new HashSet<>(userRoles).equals(new HashSet<>(tokenRoles));
+        }
+        catch (JwtException ex) {
+            return false;
+        }
+    }
 
 }

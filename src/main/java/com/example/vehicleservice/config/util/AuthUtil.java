@@ -25,7 +25,7 @@ public class AuthUtil {
     }
 
     @Transactional
-    public void updateUserMarkAsActive(String username, Byte markAsActive) {
-        userRepository.updateUseLastLoggedinDateAndUseLoggedInByUseUsername(username, markAsActive);
+    public Integer updateUserMarkAsActive(String username, Byte markAsActive) {
+        return userRepository.updateUseLastLoggedinDateAndUseLoggedInByUseUsername(username, markAsActive);
     }
 }

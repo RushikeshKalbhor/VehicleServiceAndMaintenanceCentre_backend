@@ -1,10 +1,10 @@
 package com.example.vehicleservice.config.service;
 
-import com.example.vehicleservice.admin.model.AuthenticationToken;
 import com.example.vehicleservice.admin.model.BlockingIpAddressDetail;
 import com.example.vehicleservice.admin.model.FailedLogin;
 import com.example.vehicleservice.admin.model.User;
 import com.example.vehicleservice.admin.repository.*;
+import com.example.vehicleservice.config.AuthenticationTokensCache;
 import com.example.vehicleservice.config.JwtUtil;
 import com.example.vehicleservice.config.UserDetailsServiceImpl;
 import com.example.vehicleservice.config.json.LoginJson;
@@ -46,7 +46,7 @@ public class AuthService {
     private final ValidationUtil validationUtil;
     private final BlockingIpAddressDetailRepository blockingIpAddressDetailRepository;
     private final FailedLoginRepository failedLoginRepository;
-    private final AuthenticationTokenRepository authenticationTokenRepository;
+    private final AuthenticationTokensCache authenticationTokensCache;
     private final UserRoleRepository userRoleRepository;
     private final AuthUtil authUtil;
 
@@ -54,7 +54,7 @@ public class AuthService {
                        UserDetailsServiceImpl userDetailsServiceImpl, AuthenticationManager authenticationManager,
                        HttpServletRequest request, VehiclePreferenceRepository vehiclePreferenceRepository,
                        ValidationUtil validationUtil, BlockingIpAddressDetailRepository blockingIpAddressDetailRepository,
-                       FailedLoginRepository failedLoginRepository, AuthenticationTokenRepository authenticationTokenRepository,
+                       FailedLoginRepository failedLoginRepository, AuthenticationTokensCache authenticationTokensCache,
                        UserRoleRepository userRoleRepository, AuthUtil authUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -66,7 +66,7 @@ public class AuthService {
         this.validationUtil = validationUtil;
         this.blockingIpAddressDetailRepository = blockingIpAddressDetailRepository;
         this.failedLoginRepository = failedLoginRepository;
-        this.authenticationTokenRepository = authenticationTokenRepository;
+        this.authenticationTokensCache = authenticationTokensCache;
         this.userRoleRepository = userRoleRepository;
         this.authUtil = authUtil;
     }
@@ -120,7 +120,7 @@ public class AuthService {
             String uuid = UUID.randomUUID().toString();
 
             // token added in authentication table
-            updateAuthenticationToken(loginJson.getUsername(), jwt, refreshToken, uuid);
+            authenticationTokensCache.updateAuthenticationToken(loginJson.getUsername(), jwt, refreshToken, uuid);
 
             // mark 1 for user is active
             authUtil.updateUserMarkAsActive(loginJson.getUsername(), Byte.valueOf("1"));
@@ -252,20 +252,9 @@ public class AuthService {
         blockingIpAddressDetailRepository.save(blockingIpAddressDetail);
     }
 
-    public void updateAuthenticationToken(String username, String jwtToken, String refreshToken, String uuid){
-        AuthenticationToken authenticationToken;
-        List<AuthenticationToken> userAuthenticationTokens = authenticationTokenRepository.findAuthenticationTokenByAtkUseUsername(username);
-        if(!userAuthenticationTokens.isEmpty()) {
-            authenticationToken = userAuthenticationTokens.getFirst();
-        }
-        else {
-            authenticationToken = new AuthenticationToken();
-        }
-        authenticationToken.setAtkUseUsername(username);
-        authenticationToken.setAtkJwtToken(jwtToken);
-        authenticationToken.setAtkRefreshToken(refreshToken);
-        authenticationToken.setAtkCreated(LocalDateTime.now());
-        authenticationToken.setAtkUuid(uuid);
-        authenticationTokenRepository.save(authenticationToken);
+    public ResponseJson logout(String username) {
+        authenticationTokensCache.updateAuthenticationToken(username,null,null, null);
+        Integer isUpdate = authUtil.updateUserMarkAsActive(username, Byte.valueOf("0"));
+        return new ResponseJson(isUpdate > 0 ? "logout.success" : "logout.fail");
     }
 }

@@ -6,6 +6,7 @@ import com.example.vehicleservice.config.service.AuthService;
 import com.example.vehicleservice.general.json.ResponseJson;
 import com.example.vehicleservice.swagger.GlobalApiResponses;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +42,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(authService.register(userRegisterJson));
     }
 
-    @Operation(summary = "Get login into the application", description = "This API is used to login vehicle service and maintenance centre application", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Get login into the application", description = "This API is used to login vehicle service and maintenance centre application")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description ="<b>Required json: LoginJson</b> <br>")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows Success/Fail",
@@ -56,5 +58,16 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ResponseJson> login(@Valid @RequestBody LoginJson loginJson) {
         return ResponseEntity.status(HttpStatus.OK).body(authService.login(loginJson));
+    }
+
+    @Operation(summary = "Logout user", description = "This API used for logout the user", security = @SecurityRequirement(name = "bearerAuth"))
+    @Parameter(name = "username", description = "This is the username", schema = @Schema(type = "string", maxLength = 60), required = true)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "",
+                    example = "logout.success : Logout successful, logout.fail : Logout Fail "))) })
+    @GlobalApiResponses
+    @DeleteMapping("/logout")
+    public ResponseEntity<ResponseJson> logout(@RequestParam @NotBlank String username) {
+        return ResponseEntity.status(HttpStatus.OK).body(authService.logout(username));
     }
 }
