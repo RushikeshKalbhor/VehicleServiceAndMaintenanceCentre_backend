@@ -63,11 +63,21 @@ public class AuthController {
     @Operation(summary = "Logout user", description = "This API used for logout the user", security = @SecurityRequirement(name = "bearerAuth"))
     @Parameter(name = "username", description = "This is the username", schema = @Schema(type = "string", maxLength = 60), required = true)
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "",
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "show Success / Fail",
                     example = "logout.success : Logout successful, logout.fail : Logout Fail "))) })
     @GlobalApiResponses
     @DeleteMapping("/logout")
     public ResponseEntity<ResponseJson> logout(@RequestParam @NotBlank String username) {
         return ResponseEntity.status(HttpStatus.OK).body(authService.logout(username));
+    }
+
+    @Operation(summary = "Refresh Token", description = "API is provide new jwt and refresh token to the user", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "show Success",
+                    example = "refresh.token.fetch.success : Updated token fetch successfully"))) })
+    @GlobalApiResponses
+    @GetMapping("/refresh-token")
+    public ResponseEntity<ResponseJson> refreshToken(){
+        return ResponseEntity.status(HttpStatus.OK).body(authService.refreshToken());
     }
 }

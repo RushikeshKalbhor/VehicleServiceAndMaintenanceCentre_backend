@@ -22,6 +22,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -49,13 +50,14 @@ public class AuthService {
     private final AuthenticationTokensCache authenticationTokensCache;
     private final UserRoleRepository userRoleRepository;
     private final AuthUtil authUtil;
+    private final AuthenticationTokenRepository authenticationTokenRepository;
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil,
                        UserDetailsServiceImpl userDetailsServiceImpl, AuthenticationManager authenticationManager,
                        HttpServletRequest request, VehiclePreferenceRepository vehiclePreferenceRepository,
                        ValidationUtil validationUtil, BlockingIpAddressDetailRepository blockingIpAddressDetailRepository,
                        FailedLoginRepository failedLoginRepository, AuthenticationTokensCache authenticationTokensCache,
-                       UserRoleRepository userRoleRepository, AuthUtil authUtil) {
+                       UserRoleRepository userRoleRepository, AuthUtil authUtil, AuthenticationTokenRepository authenticationTokenRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
@@ -69,6 +71,7 @@ public class AuthService {
         this.authenticationTokensCache = authenticationTokensCache;
         this.userRoleRepository = userRoleRepository;
         this.authUtil = authUtil;
+        this.authenticationTokenRepository = authenticationTokenRepository;
     }
 
     public ResponseJson register(UserRegisterJson userRegisterJson) {
@@ -256,5 +259,20 @@ public class AuthService {
         authenticationTokensCache.updateAuthenticationToken(username,null,null, null);
         Integer isUpdate = authUtil.updateUserMarkAsActive(username, Byte.valueOf("0"));
         return new ResponseJson(isUpdate > 0 ? "logout.success" : "logout.fail");
+    }
+
+    public ResponseJson refreshToken() {
+
+        UserDetail userDetails = (UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // While generating refresh token do not generate new UUID
+        // Keeping same UUID
+        String uuid = authenticationTokenRepository.findUuidByUsername(userDetails.getUsername());
+
+        // Generate new tokens
+        Map<String,String> tokens =  jwtUtil.generateTokens(userDetails);
+        // Update authentication_tokens table
+        authenticationTokensCache.updateAuthenticationToken(userDetails.getUsername(), tokens.get("jwtToken"), tokens.get("refreshToken"), uuid);
+
+        return new ResponseJson("refresh.token.fetch.success" ,Map.of("refreshToken", tokens));
     }
 }
