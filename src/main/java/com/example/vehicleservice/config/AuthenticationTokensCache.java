@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
-public class AuthenticationTokensCache {gi
+public class AuthenticationTokensCache {
 
     private final AuthenticationTokenRepository authenticationTokenRepository;
 
