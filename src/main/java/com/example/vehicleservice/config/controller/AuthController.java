@@ -80,4 +80,22 @@ public class AuthController {
     public ResponseEntity<ResponseJson> refreshToken(){
         return ResponseEntity.status(HttpStatus.OK).body(authService.refreshToken());
     }
+
+
+    @Operation(summary = "Duplicate user check", description = "This API is used to check user is already present or not ", security = @SecurityRequirement(name = "bearerAuth"))
+    @Parameter(name = "username", description = "This is the username", schema = @Schema(type = "string", maxLength = 60), required = true)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "show Success",
+                    example = """
+                            user.already.exist : User already exist for given username,
+                            user.not.found : User not found for given username
+                            """))) })
+    @GlobalApiResponses
+    @GetMapping("/user/duplicate-check")
+    public ResponseEntity<ResponseJson> duplicateCheck(@RequestParam @NotBlank String username) {
+        return ResponseEntity.status(HttpStatus.OK).body(authService.duplicateCheck(username));
+    }
+
+
+
 }

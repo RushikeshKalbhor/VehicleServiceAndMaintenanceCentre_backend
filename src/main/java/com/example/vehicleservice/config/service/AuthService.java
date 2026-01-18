@@ -16,6 +16,7 @@ import com.example.vehicleservice.general.DisplayRecordStatus;
 import com.example.vehicleservice.general.json.ResponseJson;
 import com.example.vehicleservice.general.util.ValidationUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -274,5 +275,10 @@ public class AuthService {
         authenticationTokensCache.updateAuthenticationToken(userDetails.getUsername(), tokens.get("jwtToken"), tokens.get("refreshToken"), uuid);
 
         return new ResponseJson("refresh.token.fetch.success" ,Map.of("refreshToken", tokens));
+    }
+
+    public ResponseJson duplicateCheck(String username) {
+        boolean userExist = userRepository.existsByUseUsername(username);
+        return new ResponseJson(userExist ? "user.already.exist" : "user.not.found");
     }
 }

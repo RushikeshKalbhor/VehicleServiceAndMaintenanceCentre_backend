@@ -33,6 +33,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT new com.example.vehicleservice.config.records.UserRecord(useUsername, useActive, usePasswordLastModified) FROM User WHERE useUsername = :useUsername")
     UserRecord findUseActiveByUseUsername(String useUsername);
 
-    @Query("SELECT useLoginAttempts FROM User where useUsername = :useUsername")
+    @Query("SELECT useLoginAttempts FROM User WHERE useUsername = :useUsername")
     Integer findUseLoginAttemptsByUseUsername(String useUsername);
+
+    @Query("SELECT COUNT(useUsername) > 0 FROM User WHERE useUsername = :useUsername")
+    boolean existsByUseUsername(String useUsername);
 }
