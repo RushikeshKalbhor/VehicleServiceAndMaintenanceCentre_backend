@@ -16,7 +16,6 @@ import com.example.vehicleservice.general.DisplayRecordStatus;
 import com.example.vehicleservice.general.json.ResponseJson;
 import com.example.vehicleservice.general.util.ValidationUtil;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -82,10 +81,13 @@ public class AuthService {
         user.setUseFirstName(userRegisterJson.getUseFirstName());
         user.setUseSurname(userRegisterJson.getUseSurname());
         user.setUseFullName(userRegisterJson.getUseFirstName() + " " + userRegisterJson.getUseSurname());
+        user.setUseActive(userRegisterJson.getUseActive().byteValue());
         user.setUseEmail(userRegisterJson.getUseEmail());
         user.setUseMobile(userRegisterJson.getUseMobile());
         user.setUsePassword(passwordEncoder.encode(userRegisterJson.getUsePassword()));
         user.setUsePasswordLastModified(LocalDate.now());
+        user.setUseCreated(LocalDateTime.now());
+        user.setUseCreatedBy(userRegisterJson.getUseUsername());
         userRepository.save(user);
         return new ResponseJson("user.registered.success");
     }

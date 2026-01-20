@@ -123,3 +123,19 @@ COMMENT = 'This table will contain preferences for default texting username and 
 PACK_KEYS = 0
 ROW_FORMAT = DEFAULT;
 
+-- -----------------------------------------------------
+-- Table `vehicles`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `vehicles` (
+  `veh_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary Key for the table',
+  `veh_vehicle_number` VARCHAR(255)  NOT NULL COMMENT 'Vehicle registration number',
+  `veh_vehicle_type` VARCHAR(50) NOT NULL COMMENT 'Type of vehicle (e.g., Car, Bike)',
+  `veh_brand` VARCHAR(100) NOT NULL COMMENT 'Brand of the vehicle (e.g., Toyota, Honda)',
+  `veh_model` VARCHAR(100) NOT NULL COMMENT 'Model of the vehicle (e.g., Corolla, City)',
+  `veh_manufacturing_year` MEDIUMINT NULL COMMENT 'Manufacturing year of the vehicle',
+  `veh_use_username` VARCHAR(40) NOT NULL COMMENT 'This column will store the owner username of the vehicle',
+  `veh_created` DATETIME NOT NULL COMMENT 'This column stores the timestamp of user account was created.',
+  `veh_record_status` ENUM('approved', 'wrong') NOT NULL COMMENT 'This column will store the record status of the record',
+PRIMARY KEY (`veh_id`))
+ENGINE = InnoDB
+COMMENT = 'Stores vehicle details such as number, type, brand, model, and manufacturing year.';

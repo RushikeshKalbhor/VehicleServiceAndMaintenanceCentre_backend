@@ -31,7 +31,7 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @Operation(summary = "Add or register the user", description = "This API is used to add or register the user", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Add or register the user", description = "This API is used to add or register the user")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description ="<b>Required json: UserRegisterJson</b> <br>")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows Success",
@@ -82,7 +82,7 @@ public class AuthController {
     }
 
 
-    @Operation(summary = "Duplicate user check", description = "This API is used to check user is already present or not ", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Duplicate user check", description = "This API is used to check user is already present or not ")
     @Parameter(name = "username", description = "This is the username", schema = @Schema(type = "string", maxLength = 60), required = true)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "show Success",
@@ -95,7 +95,4 @@ public class AuthController {
     public ResponseEntity<ResponseJson> duplicateCheck(@RequestParam @NotBlank String username) {
         return ResponseEntity.status(HttpStatus.OK).body(authService.duplicateCheck(username));
     }
-
-
-
 }
