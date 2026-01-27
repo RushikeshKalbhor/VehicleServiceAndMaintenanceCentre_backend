@@ -2,10 +2,7 @@ package com.example.vehicleservice.config.json;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
 @Schema(description = "This json shows user registration related fields")
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -41,6 +38,11 @@ public class UserRegisterJson {
     @Min(0)
     @Max(1)
     private Integer useActive;
+
+    @Schema(description = "This field will store the user type", example = "customer")
+    @Pattern(regexp = "^(customer|mechanic)$", message = "useType must be customer or mechanic")
+    @NotBlank
+    private String useType;
 
     public String getUseUsername() {
         return useUsername;
@@ -104,5 +106,13 @@ public class UserRegisterJson {
 
     public void setUseActive(Integer useActive) {
         this.useActive = useActive;
+    }
+
+    public String getUseType() {
+        return useType;
+    }
+
+    public void setUseType(String useType) {
+        this.useType = useType;
     }
 }

@@ -47,3 +47,5 @@ ENGINE = InnoDB
 COMMENT = 'Stores vehicle details such as number, type, brand, model, and manufacturing year.';
 
 INSERT INTO `vsamc`.`user_groups` (`usg_name`, `usg_description`, `usg_type`, `usg_created`) VALUES ('customer', 'This role is have all access for the customer', 'customer module access', '2026-01-19');
+
+alter table users add column `use_type` ENUM('customer', 'mechanic', 'admin') NOT NULL COMMENT 'This column store the users type' after use_password;

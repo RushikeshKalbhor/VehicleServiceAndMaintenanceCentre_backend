@@ -37,6 +37,9 @@ public class User {
     @Column(name = "use_password", nullable = false)
     private String usePassword;
 
+    @Column(name = "use_type", nullable = false)
+    private String useType;
+
     @Column(name = "use_password_last_modified")
     private java.time.LocalDate usePasswordLastModified;
 
@@ -125,6 +128,14 @@ public class User {
 
     public void setUsePassword(String usePassword) {
         this.usePassword = usePassword;
+    }
+
+    public String getUseType() {
+        return useType;
+    }
+
+    public void setUseType(String useType) {
+        this.useType = useType;
     }
 
     public LocalDate getUsePasswordLastModified() {

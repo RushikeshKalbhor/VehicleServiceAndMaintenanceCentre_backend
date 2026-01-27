@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `use_email` VARCHAR(150) NULL COMMENT 'This column stores the users email address.',
   `use_mobile` VARCHAR(20) NULL COMMENT 'This column stores the users mobile number',
   `use_password` VARCHAR(64) NULL COMMENT 'This column stores the password of user',
+  `use_type` ENUM('customer', 'mechanic', 'admin') NOT NULL COMMENT 'This column store the users type', 
   `use_password_last_modified` DATE NULL COMMENT 'This column stores the date of the user\'s last password update.',
   `use_last_loggedin_date` DATE NULL COMMENT 'This column stores the date the user last logged in.',
   `use_logged_in` TINYINT(1) NULL COMMENT 'This column stores the flag if the user is currently logged in. (e.g.  1 if logged in)',
