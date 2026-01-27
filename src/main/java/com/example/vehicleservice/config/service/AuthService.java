@@ -85,8 +85,10 @@ public class AuthService {
         user.setUseEmail(userRegisterJson.getUseEmail());
         user.setUseMobile(userRegisterJson.getUseMobile());
         user.setUsePassword(passwordEncoder.encode(userRegisterJson.getUsePassword()));
-        if (validationUtil.isNullOrEmpty(userRegisterJson.getUseType())) {
+        if (!validationUtil.isNullOrEmpty(userRegisterJson.getUseType())) {
             user.setUseType(userRegisterJson.getUseType());
+        } else {
+            user.setUseType("customer");
         }
         user.setUsePasswordLastModified(LocalDate.now());
         user.setUseCreated(LocalDateTime.now());
