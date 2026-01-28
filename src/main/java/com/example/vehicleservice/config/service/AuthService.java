@@ -1,8 +1,6 @@
 package com.example.vehicleservice.config.service;
 
-import com.example.vehicleservice.admin.model.BlockingIpAddressDetail;
-import com.example.vehicleservice.admin.model.FailedLogin;
-import com.example.vehicleservice.admin.model.User;
+import com.example.vehicleservice.admin.model.*;
 import com.example.vehicleservice.admin.repository.*;
 import com.example.vehicleservice.config.AuthenticationTokensCache;
 import com.example.vehicleservice.config.JwtUtil;
@@ -29,10 +27,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AuthService {
@@ -51,13 +46,15 @@ public class AuthService {
     private final UserRoleRepository userRoleRepository;
     private final AuthUtil authUtil;
     private final AuthenticationTokenRepository authenticationTokenRepository;
+    private final UserGroupRepository userGroupRepository;
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil,
                        UserDetailsServiceImpl userDetailsServiceImpl, AuthenticationManager authenticationManager,
                        HttpServletRequest request, VehiclePreferenceRepository vehiclePreferenceRepository,
                        ValidationUtil validationUtil, BlockingIpAddressDetailRepository blockingIpAddressDetailRepository,
                        FailedLoginRepository failedLoginRepository, AuthenticationTokensCache authenticationTokensCache,
-                       UserRoleRepository userRoleRepository, AuthUtil authUtil, AuthenticationTokenRepository authenticationTokenRepository) {
+                       UserRoleRepository userRoleRepository, AuthUtil authUtil, AuthenticationTokenRepository authenticationTokenRepository,
+                       UserGroupRepository userGroupRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
@@ -72,6 +69,7 @@ public class AuthService {
         this.userRoleRepository = userRoleRepository;
         this.authUtil = authUtil;
         this.authenticationTokenRepository = authenticationTokenRepository;
+        this.userGroupRepository = userGroupRepository;
     }
 
     public ResponseJson register(UserRegisterJson userRegisterJson) {
@@ -85,8 +83,14 @@ public class AuthService {
         user.setUseEmail(userRegisterJson.getUseEmail());
         user.setUseMobile(userRegisterJson.getUseMobile());
         user.setUsePassword(passwordEncoder.encode(userRegisterJson.getUsePassword()));
+        List<UserRole> userRoleList = new ArrayList<>();
         if (!validationUtil.isNullOrEmpty(userRegisterJson.getUseType())) {
             user.setUseType(userRegisterJson.getUseType());
+            List<UserGroup> userGroupList = userGroupRepository.findUserGroupByUsgName(userRegisterJson.getUseType());
+            for (UserGroup userGroup : userGroupList) {
+                addUserRole(userRegisterJson.getUseUsername(), userGroup, userRoleList);
+            }
+
         } else {
             user.setUseType("customer");
         }
@@ -94,7 +98,18 @@ public class AuthService {
         user.setUseCreated(LocalDateTime.now());
         user.setUseCreatedBy(userRegisterJson.getUseUsername());
         userRepository.save(user);
+        if (!userRoleList.isEmpty()) {
+            userRoleRepository.saveAll(userRoleList);
+        }
         return new ResponseJson("user.registered.success");
+    }
+
+    private static void addUserRole(String usrUseUsername, UserGroup userGroup, List<UserRole> userRoleList) {
+        UserRole userRole = new UserRole();
+        userRole.setUsrUseUsername(usrUseUsername);
+        userRole.setUsrUsgId(userGroup.getUsgId());
+        userRole.setUsrName(userGroup.getUsgName());
+        userRoleList.add(userRole);
     }
 
     public ResponseJson login(LoginJson loginJson) {
