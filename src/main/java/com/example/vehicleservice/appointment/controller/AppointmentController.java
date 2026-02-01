@@ -104,8 +104,10 @@ public class AppointmentController {
     @Operation(summary = "Get mechanic appointments", description = "This API is used to get mechanic appointment", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows Found/Not found",
-                    example = "mechanic.appointment.details.found : Mechanic appointment details found successfully, " +
-                            "mechanic.appointment.details.not.found : Mechanic appointment details not found")))})
+                    example = """
+                            mechanic.appointment.details.found : Mechanic appointment details found successfully,
+                            mechanic.appointment.details.not.found : Mechanic appointment details not found
+                            """)))})
     @GlobalApiResponses
     @PreAuthorize("hasAuthority('mechanic')")
     @GetMapping("/mechanic/appointments")
