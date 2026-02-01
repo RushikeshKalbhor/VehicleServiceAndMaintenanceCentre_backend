@@ -3,12 +3,14 @@ package com.example.vehicleservice.admin.repository;
 import com.example.vehicleservice.admin.model.User;
 import com.example.vehicleservice.config.records.UserLoginDetailsRecord;
 import com.example.vehicleservice.config.records.UserRecord;
+import com.example.vehicleservice.mechanic.records.MechanicRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -38,4 +40,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("SELECT COUNT(useUsername) > 0 FROM User WHERE useUsername = :useUsername")
     boolean existsByUseUsername(String useUsername);
+
+    @Query("""
+    SELECT new com.example.vehicleservice.mechanic.records.MechanicRecord(useUsername, useTitle, useFirstName, useSurname) FROM User
+    WHERE useType = :useType AND useActive = :useActive
+    """)
+    List<MechanicRecord> findMechanicRecordUseType(String useType, Byte useActive);
 }

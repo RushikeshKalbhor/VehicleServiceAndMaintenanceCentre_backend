@@ -49,3 +49,19 @@ COMMENT = 'Stores vehicle details such as number, type, brand, model, and manufa
 INSERT INTO `vsamc`.`user_groups` (`usg_name`, `usg_description`, `usg_type`, `usg_created`) VALUES ('customer', 'This role is have all access for the customer', 'customer module access', '2026-01-19');
 
 alter table users add column `use_type` ENUM('customer', 'mechanic', 'admin') NOT NULL COMMENT 'This column store the users type' after use_password;
+
+CREATE TABLE IF NOT EXISTS `appointments` (
+  `apt_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary Key for the appointment table',
+  `apt_date` DATE NOT NULL COMMENT 'Appointment date selected by the customer',
+  `apt_problem_description` VARCHAR(500) NULL COMMENT 'Problem description provided by the customer',
+  `apt_status` ENUM('PENDING', 'APPROVED', 'REJECTED', 'ASSIGNED') NOT NULL COMMENT 'Current status of the appointment',
+  `apt_customer` VARCHAR(40) NOT NULL COMMENT 'Username of the customer who booked the appointment',
+  `apt_veh_id` MEDIUMINT UNSIGNED NOT NULL COMMENT 'Vehicle ID linked to this appointment',
+  `apt_mechanic` VARCHAR(40) NULL COMMENT 'Username of the mechanic assigned to the appointment',
+  `apt_created` DATETIME NOT NULL COMMENT 'Timestamp when the appointment was created',
+  `apt_record_status` ENUM('approved', 'wrong') NOT NULL COMMENT 'Record status of the appointment',
+  PRIMARY KEY (`apt_id`)
+)ENGINE = InnoDB
+COMMENT = 'Stores appointment details including date, problem description, status, customer, vehicle, and assigned mechanic.';
+
+INSERT INTO `vsamc`.`user_groups` (`usg_name`, `usg_description`, `usg_type`, `usg_created`) VALUES ('mechanic', 'This role is have all access for the mechanic', 'mechanic module access', '2026-02-01');
