@@ -10,7 +10,7 @@ public class VehiclePostJson {
 
     @Schema(description = "This field will store the vehicle number", example = "MH12AA0001")
     @NotBlank
-    @Size(min = 1, max = 15)
+    @Size(min = 7, max = 15)
     private String vehVehicleNumber;
 
     @Schema(description = "This field will store the vehicle type e.g car, bike", example = "car")

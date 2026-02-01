@@ -8,6 +8,7 @@ import com.example.vehicleservice.vehicle.repository.VehicleRepository;
 import com.example.vehicleservice.vehicle.util.VehicleUtil;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -47,5 +48,11 @@ public class VehicleService {
     public ResponseJson duplicateVehicleCheck(String vehVehicleNumber) {
         boolean existVehicle = vehicleRepository.existVehicleByVehVehicleNumberAndVehRecordStatus(vehVehicleNumber);
         return new ResponseJson(existVehicle ? "vehicle.already.registered" : "vehicle.not.found");
+    }
+
+    @Transactional
+    public ResponseJson deleteVehicle(Integer vehId) {
+        int deletedVehicle = vehicleRepository.deleteVehicleByVehId(vehId);
+        return new ResponseJson(deletedVehicle == 0 ? "vehicle.delete.fail" : "vehicle.delete.success");
     }
 }

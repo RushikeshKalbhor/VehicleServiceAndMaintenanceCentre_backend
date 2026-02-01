@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
@@ -80,5 +82,19 @@ public class VehicleController {
     @GetMapping("/vehicle/duplicate-check")
     public ResponseEntity<ResponseJson> duplicateVehicleCheck(@RequestParam @NotBlank @Size(min = 7, max = 15) String vehVehicleNumber) {
         return ResponseEntity.status(HttpStatus.OK).body(vehicleService.duplicateVehicleCheck(vehVehicleNumber));
+    }
+
+    @Operation(summary = "Delete vehicle", description = "This API is used to delete vehicle", security = @SecurityRequirement(name = "bearerAuth"))
+    @Parameter(name = "vehId", description = "This is the vehicle id", schema = @Schema(type = "integer", minimum = "1", maximum = "8388607"), required = true)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "show Success/Fail",
+                    example = """
+                            vehicle.delete.success : Vehicle delete successfully,
+                            vehicle.delete.fail : Failed to delete vehicle
+                            """))) })
+    @GlobalApiResponses
+    @DeleteMapping("/vehicle")
+    public ResponseEntity<ResponseJson> deleteVehicle(@RequestParam @Min(1) @Max(8388607) Integer vehId) {
+        return ResponseEntity.status(HttpStatus.OK).body(vehicleService.deleteVehicle(vehId));
     }
 }
