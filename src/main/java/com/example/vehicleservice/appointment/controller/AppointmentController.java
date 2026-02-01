@@ -91,8 +91,10 @@ public class AppointmentController {
     @Parameter(name = "username", description = "This is the mechanic username", schema = @Schema(type = "string", maxLength = 40), required = true)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows Success/Failed",
-                    example = "mechanic.assigned.success : Mechanic assigned successfully, " +
-                            "mechanic.assigned.failed : Failed to assign mechanic")))})
+                    example = """
+                            mechanic.assigned.success : Mechanic assigned successfully,
+                            mechanic.assigned.failed : Failed to assign mechanic
+                            """)))})
     @GlobalApiResponses
     @PutMapping("/admin/appointments/assign")
     public ResponseEntity<ResponseJson> assignMechanic(@RequestParam @Min(1) @Max(8388607) Integer aptId,
