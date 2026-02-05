@@ -46,4 +46,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     WHERE useType = :useType AND useActive = :useActive
     """)
     List<MechanicRecord> findMechanicRecordUseType(String useType, Byte useActive);
+
+    @Query("SELECT useType FROM User WHERE useUsername = :useUsername")
+    String findUserTypeByUseUsername(String useUsername);
 }

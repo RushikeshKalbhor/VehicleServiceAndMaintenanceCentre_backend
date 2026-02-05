@@ -152,7 +152,7 @@ public class AuthService {
             authUtil.updateUserMarkAsActive(loginJson.getUsername(), Byte.valueOf("1"));
 
             // set response
-            buildAuthenticationResponse(jwt, refreshToken, responseJson);
+            buildAuthenticationResponse(jwt, refreshToken, responseJson, loginJson.getUsername());
             return ResponseEntity.status(HttpStatus.OK).body(responseJson).getBody();
         }
         throw new BadCredentialsException(responseJson.toString());
@@ -188,10 +188,11 @@ public class AuthService {
         return new ResponseJson();
     }
 
-    public void buildAuthenticationResponse(String jwt, String refreshToken, ResponseJson responseJson) {
+    public void buildAuthenticationResponse(String jwt, String refreshToken, ResponseJson responseJson, String username) {
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("Jwt", jwt);
         responseMap.put("RefreshToken", refreshToken);
+        responseMap.put("userType", userRepository.findUserTypeByUseUsername(username));
 
         responseJson.setEntity(responseMap);
         responseJson.setValidationCode("user.login.success");
