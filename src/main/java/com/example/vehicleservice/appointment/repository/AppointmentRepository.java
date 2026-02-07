@@ -35,4 +35,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
 
     @Query("SELECT COUNT(aptId) FROM Appointment WHERE aptRecordStatus = 'approved'")
     Integer findAppointmentCount();
+
+    @Modifying
+    @Query("UPDATE Appointment SET aptRecordStatus = 'wrong' WHERE aptId = :aptId AND aptRecordStatus = 'approved'")
+    int deleteAppointmentByAptId(Integer aptId);
 }

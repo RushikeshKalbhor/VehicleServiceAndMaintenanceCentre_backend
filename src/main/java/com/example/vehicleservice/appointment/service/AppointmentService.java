@@ -5,6 +5,8 @@ import com.example.vehicleservice.appointment.repository.AppointmentRepository;
 import com.example.vehicleservice.config.security.UserDetail;
 import com.example.vehicleservice.general.json.ResponseJson;
 import com.example.vehicleservice.general.util.DateUtils;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -103,5 +105,11 @@ public class AppointmentService {
             entityMap.put("appointmentCount", appointmentCount);
         }
         return new ResponseJson("appointment.list.found",  entityMap);
+    }
+
+    @Transactional
+    public ResponseJson deleteAppointment(Integer aptId) {
+        int deletedAppointment = appointmentRepository.deleteAppointmentByAptId(aptId);
+        return new ResponseJson(deletedAppointment == 0 ? "appointment.delete.fail" : "appointment.delete.success");
     }
 }
