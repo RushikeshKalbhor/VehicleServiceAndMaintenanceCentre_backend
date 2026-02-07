@@ -5,12 +5,16 @@ import com.example.vehicleservice.appointment.repository.AppointmentRepository;
 import com.example.vehicleservice.config.security.UserDetail;
 import com.example.vehicleservice.general.json.ResponseJson;
 import com.example.vehicleservice.general.util.DateUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AppointmentService {
@@ -83,5 +87,21 @@ public class AppointmentService {
             return new ResponseJson("mechanic.appointment.details.not.found");
         }
         return new ResponseJson("mechanic.appointment.details.found",  appointmentList);
+    }
+
+    public ResponseJson getAdminAppointmentList(Integer pageNumber) {
+        Map<String, Object> entityMap = new HashMap<>();
+        pageNumber = pageNumber == null ? 1 : pageNumber;
+        Pageable pageable = PageRequest.of(pageNumber - 1, 10);
+        List<Appointment> appointmentList = appointmentRepository.findAppointment(pageable);
+        if (appointmentList.isEmpty()) {
+            return new  ResponseJson("appointment.list.not.found");
+        }
+        entityMap.put("appointmentList", appointmentList);
+        if (pageNumber == 1) {
+            Integer appointmentCount = appointmentRepository.findAppointmentCount();
+            entityMap.put("appointmentCount", appointmentCount);
+        }
+        return new ResponseJson("appointment.list.found",  entityMap);
     }
 }

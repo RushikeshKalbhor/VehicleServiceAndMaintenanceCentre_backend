@@ -48,7 +48,7 @@ public class AppointmentController {
     }
 
     // CUSTOMER
-    @Operation(summary = "book appointment", description = "This API is used to book appointment", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Get appointment", description = "This API is used to get booked appointment", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows found/not found",
                     example = "customer.appointment.found : Customer appointment found successfully, " +
@@ -115,5 +115,19 @@ public class AppointmentController {
     @GetMapping("/mechanic/appointments")
     public ResponseEntity<ResponseJson> mechanicAppointments() {
         return ResponseEntity.status(HttpStatus.OK).body(appointmentService.mechanicAppointments());
+    }
+
+    // ADMIN
+    @Operation(summary = "Get admin appointment", description = "This API is used to get admin appointment list", security = @SecurityRequirement(name = "bearerAuth"))
+    @Parameter(name = "pageNumber", description = "This is the page number", schema = @Schema(type = "integer", minimum = "1", maximum = "8388607"), required = false)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows found/not found",
+                    example = "appointment.list.found : Appointment list found successfully, " +
+                            "appointment.list.not.found : Appointment list not found")))})
+    @GlobalApiResponses
+    @PreAuthorize("hasAuthority('admin')")
+    @GetMapping("/admin/appointments/list")
+    public ResponseEntity<ResponseJson> getAdminAppointmentList(@RequestParam (required = false) @Min(1) @Max(8388607) Integer pageNumber) {
+        return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getAdminAppointmentList(pageNumber));
     }
 }
