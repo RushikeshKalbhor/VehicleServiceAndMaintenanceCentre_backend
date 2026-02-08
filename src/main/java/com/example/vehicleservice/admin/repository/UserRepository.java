@@ -49,4 +49,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("SELECT useType FROM User WHERE useUsername = :useUsername")
     String findUserTypeByUseUsername(String useUsername);
+
+    @Query("""
+    SELECT new com.example.vehicleservice.mechanic.records.MechanicRecord(useUsername, useTitle, useFirstName, useSurname) FROM User
+    WHERE useUsername IN (:useUsername)
+    """)
+    List<MechanicRecord> findUserNameRecordByUsernameList(List<String> useUsername);
 }
