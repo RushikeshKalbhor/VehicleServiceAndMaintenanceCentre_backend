@@ -8,6 +8,8 @@ import com.example.vehicleservice.vehicle.json.VehiclePostJson;
 import com.example.vehicleservice.vehicle.model.Vehicle;
 import com.example.vehicleservice.vehicle.repository.VehicleRepository;
 import com.example.vehicleservice.vehicle.util.VehicleUtil;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,11 +45,14 @@ public class VehicleService {
         return new ResponseJson("vehicle.found", vehicleList);
     }
 
-    public ResponseJson getAllVehicles() {
-        List<Vehicle> vehicleList = vehicleRepository.findVehicleByVehRecordStatus();
+    public ResponseJson getAllVehicles(Integer pageNumber) {
+        pageNumber = pageNumber == null ? 1 : pageNumber;
+        Pageable pageable = PageRequest.of(pageNumber - 1, 10);
+        List<Vehicle> vehicleList = vehicleRepository.findVehicleByVehRecordStatus(pageable);
         if (vehicleList.isEmpty()) {
             return new ResponseJson("vehicle.not.found");
         }
+
         List<String> username = vehicleList.stream().map(Vehicle :: getVehUseUsername).distinct().toList();
         List<MechanicRecord> usernameList = userRepository.findUserNameRecordByUsernameList(username);
 
@@ -70,8 +75,14 @@ public class VehicleService {
             }
             finalVehicleList.add(vehicleMap);
         }
+        Map<String, Object> entityMap = new HashMap<>();
+        entityMap.put("finalVehicleList", finalVehicleList);
 
-        return new ResponseJson("vehicle.found", finalVehicleList);
+        if (pageNumber == 1) {
+            Integer vehicleCount = vehicleRepository.findVehicleByVehRecordStatusAndPageNumber();
+            entityMap.put("vehicleCount", vehicleCount);
+        }
+        return new ResponseJson("vehicle.found", entityMap);
     }
 
     public String concatUserFullname(String useTitle, String useFirstname, String useSurname) {

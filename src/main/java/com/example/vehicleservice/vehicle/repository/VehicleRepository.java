@@ -1,6 +1,7 @@
 package com.example.vehicleservice.vehicle.repository;
 
 import com.example.vehicleservice.vehicle.model.Vehicle;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -15,7 +16,10 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Integer> {
     List<Vehicle> findVehicleByVehUseUsername(String vehUseUsername);
 
     @Query("FROM Vehicle WHERE vehRecordStatus = 'approved'")
-    List<Vehicle> findVehicleByVehRecordStatus();
+    List<Vehicle> findVehicleByVehRecordStatus(Pageable pageable);
+
+    @Query("SELECT COUNT(vehId) FROM Vehicle WHERE vehRecordStatus = 'approved'")
+    Integer findVehicleByVehRecordStatusAndPageNumber();
 
     @Query("SELECT COUNT(vehId) > 0 FROM Vehicle WHERE vehVehicleNumber = :vehVehicleNumber AND vehRecordStatus = 'approved'")
     boolean existVehicleByVehVehicleNumberAndVehRecordStatus(String vehVehicleNumber);
@@ -23,4 +27,5 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Integer> {
     @Modifying
     @Query("UPDATE Vehicle SET vehRecordStatus = 'wrong' WHERE vehId = :vehId AND vehRecordStatus = 'approved'")
     int deleteVehicleByVehId(Integer vehId);
+
 }
