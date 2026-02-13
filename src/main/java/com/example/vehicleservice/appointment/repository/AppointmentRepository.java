@@ -1,5 +1,6 @@
 package com.example.vehicleservice.appointment.repository;
 
+import com.example.vehicleservice.appointment.AppointmentRecord;
 import com.example.vehicleservice.appointment.model.Appointment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,9 +14,14 @@ import java.util.List;
 public interface AppointmentRepository extends JpaRepository<Appointment, Integer> {
 
     @Query("""
-    FROM Appointment WHERE aptCustomer = :aptCustomer AND aptRecordStatus = 'approved'
+    SELECT new com.example.vehicleservice.appointment.AppointmentRecord(a.aptId, a.aptStatus, a.aptProblemDescription, a.aptMechanic, a.aptVehId,
+    a.aptDate, a.aptCustomer, a.aptCreated, v.vehVehicleNumber, u.useTitle AS custTitle, u.useFirstName AS custFirstName, u.useSurname AS custSurname,
+    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname)
+    FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
+    JOIN User u ON u.useUsername = a.aptCustomer
+    LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptCustomer = :aptCustomer AND a.aptRecordStatus = 'approved'
     """)
-    List<Appointment> findAppointmentByAptCustomer(String aptCustomer);
+    List<AppointmentRecord> findAppointmentRecordByAptCustomer(String aptCustomer);
 
     @Modifying
     @Query("UPDATE Appointment SET aptStatus = :aptStatus WHERE aptId = :aptId AND aptRecordStatus = 'approved'")

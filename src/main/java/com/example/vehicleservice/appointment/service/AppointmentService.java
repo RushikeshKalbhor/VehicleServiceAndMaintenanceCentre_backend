@@ -1,12 +1,11 @@
 package com.example.vehicleservice.appointment.service;
 
+import com.example.vehicleservice.appointment.AppointmentRecord;
 import com.example.vehicleservice.appointment.model.Appointment;
 import com.example.vehicleservice.appointment.repository.AppointmentRepository;
 import com.example.vehicleservice.config.security.UserDetail;
 import com.example.vehicleservice.general.json.ResponseJson;
 import com.example.vehicleservice.general.util.DateUtils;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -74,7 +73,7 @@ public class AppointmentService {
     // CUSTOMER
     public ResponseJson myAppointments() {
         UserDetail userDetails = (UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<Appointment> appointmentList = appointmentRepository.findAppointmentByAptCustomer(userDetails.getUsername());
+        List<AppointmentRecord> appointmentList = appointmentRepository.findAppointmentRecordByAptCustomer(userDetails.getUsername());
         if (appointmentList.isEmpty()) {
             return new  ResponseJson("customer.appointment.not.found");
         }
