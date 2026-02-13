@@ -104,6 +104,7 @@ public class AppointmentController {
 
     // MECHANIC
     @Operation(summary = "Get mechanic appointments", description = "This API is used to get mechanic appointment", security = @SecurityRequirement(name = "bearerAuth"))
+    @Parameter(name = "pageNumber", description = "This is the page number", schema = @Schema(type = "integer", minimum = "1", maximum = "8388607"), required = false)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows Found/Not found",
                     example = """
@@ -113,8 +114,8 @@ public class AppointmentController {
     @GlobalApiResponses
     @PreAuthorize("hasAuthority('mechanic')")
     @GetMapping("/mechanic/appointments")
-    public ResponseEntity<ResponseJson> mechanicAppointments() {
-        return ResponseEntity.status(HttpStatus.OK).body(appointmentService.mechanicAppointments());
+    public ResponseEntity<ResponseJson> mechanicAppointments(@RequestParam (required = false) @Min(1) @Max(8388607) Integer pageNumber) {
+        return ResponseEntity.status(HttpStatus.OK).body(appointmentService.mechanicAppointments(pageNumber));
     }
 
     // ADMIN

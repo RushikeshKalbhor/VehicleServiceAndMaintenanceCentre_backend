@@ -81,13 +81,23 @@ public class AppointmentService {
     }
 
     // MECHANIC
-    public ResponseJson mechanicAppointments() {
+    public ResponseJson mechanicAppointments(Integer pageNumber) {
         UserDetail userDetails = (UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<Appointment> appointmentList = appointmentRepository.findAppointmentByAptMechanic(userDetails.getUsername());
+        Map<String, Object> entityMap = new HashMap<>();
+
+        pageNumber = pageNumber == null ? 1 : pageNumber;
+        Pageable pageable = PageRequest.of(pageNumber - 1, 10);
+
+        List<AppointmentRecord> appointmentList = appointmentRepository.findAppointmentByAptMechanic(userDetails.getUsername(), pageable);
         if (appointmentList.isEmpty()) {
             return new ResponseJson("mechanic.appointment.details.not.found");
         }
-        return new ResponseJson("mechanic.appointment.details.found",  appointmentList);
+        entityMap.put("appointmentList", appointmentList);
+        if (pageNumber == 1) {
+            Integer appointmentCount = appointmentRepository.findAppointmentCountByAptMechanic(userDetails.getUsername());
+            entityMap.put("appointmentCount", appointmentCount);
+        }
+        return new ResponseJson("mechanic.appointment.details.found",  entityMap);
     }
 
     public ResponseJson getAdminAppointmentList(Integer pageNumber) {

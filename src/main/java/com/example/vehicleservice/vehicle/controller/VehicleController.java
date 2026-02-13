@@ -40,7 +40,6 @@ public class VehicleController {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows Success",
                     example = "vehicle.add.success : Vehicle added successfully")))})
     @GlobalApiResponses
-    @PreAuthorize("hasAuthority('customer')")
     @PostMapping("/customer/vehicles")
     public ResponseEntity<ResponseJson> addVehicle(@RequestBody @Valid VehiclePostJson vehiclePostJson) {
         return ResponseEntity.status(HttpStatus.OK).body(vehicleService.addVehicle(vehiclePostJson));

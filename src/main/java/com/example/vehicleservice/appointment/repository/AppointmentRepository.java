@@ -32,9 +32,22 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     int updateAptMechanicAndAptStatusByAptId(Integer aptId, String aptMechanic, String aptStatus);
 
     @Query("""
-    FROM Appointment WHERE aptMechanic = :aptMechanic AND aptRecordStatus = 'approved'
+    SELECT new com.example.vehicleservice.appointment.AppointmentRecord(a.aptId, a.aptStatus, a.aptProblemDescription, a.aptMechanic, a.aptVehId,
+    a.aptDate, a.aptCustomer, a.aptCreated, v.vehVehicleNumber, u.useTitle AS custTitle, u.useFirstName AS custFirstName, u.useSurname AS custSurname,
+    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname)
+    FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
+    JOIN User u ON u.useUsername = a.aptCustomer
+    LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptMechanic = :aptMechanic AND a.aptRecordStatus = 'approved' ORDER BY a.aptId DESC
     """)
-    List<Appointment> findAppointmentByAptMechanic(String aptMechanic);
+    List<AppointmentRecord> findAppointmentByAptMechanic(String aptMechanic, Pageable pageable);
+
+    @Query("""
+    SELECT COUNT(a.aptId)
+    FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
+    JOIN User u ON u.useUsername = a.aptCustomer
+    LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptMechanic = :aptMechanic AND a.aptRecordStatus = 'approved'
+    """)
+    Integer findAppointmentCountByAptMechanic(String username);
 
     @Query("""
     SELECT new com.example.vehicleservice.appointment.AppointmentRecord(a.aptId, a.aptStatus, a.aptProblemDescription, a.aptMechanic, a.aptVehId,
@@ -42,7 +55,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname)
     FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
     JOIN User u ON u.useUsername = a.aptCustomer
-    LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptRecordStatus = 'approved'
+    LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptRecordStatus = 'approved' ORDER BY a.aptId DESC
     """)
     List<AppointmentRecord> findAppointment(Pageable pageable);
 
@@ -60,4 +73,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
 
     @Query("SELECT aptMechanic FROM Appointment WHERE aptId = :aptId AND aptRecordStatus = 'approved'")
     String findAptMechanicByAptId(Integer aptId);
+
 }
