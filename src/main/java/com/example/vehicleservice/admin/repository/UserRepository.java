@@ -1,6 +1,7 @@
 package com.example.vehicleservice.admin.repository;
 
 import com.example.vehicleservice.admin.model.User;
+import com.example.vehicleservice.config.records.UserListRecord;
 import com.example.vehicleservice.config.records.UserLoginDetailsRecord;
 import com.example.vehicleservice.config.records.UserRecord;
 import com.example.vehicleservice.mechanic.records.MechanicRecord;
@@ -55,4 +56,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     WHERE useUsername IN (:useUsername)
     """)
     List<MechanicRecord> findUserNameRecordByUsernameList(List<String> useUsername);
+
+    @Query("""
+        SELECT new com.example.vehicleservice.config.records.UserListRecord(useUsername, useTitle, useFirstName, useSurname, useLoggedIn)
+        FROM User WHERE useActive = 1
+        """)
+    List<UserListRecord> findUserListRecord();
 }

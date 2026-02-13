@@ -7,6 +7,7 @@ import com.example.vehicleservice.config.JwtUtil;
 import com.example.vehicleservice.config.UserDetailsServiceImpl;
 import com.example.vehicleservice.config.json.LoginJson;
 import com.example.vehicleservice.config.json.UserRegisterJson;
+import com.example.vehicleservice.config.records.UserListRecord;
 import com.example.vehicleservice.config.records.UserRecord;
 import com.example.vehicleservice.config.security.UserDetail;
 import com.example.vehicleservice.config.util.AuthUtil;
@@ -303,5 +304,13 @@ public class AuthService {
     public ResponseJson duplicateCheck(String username) {
         boolean userExist = userRepository.existsByUseUsername(username);
         return new ResponseJson(userExist ? "user.already.exist" : "user.not.found");
+    }
+
+    public ResponseJson getUserList() {
+        List<UserListRecord> userListRecordList = userRepository.findUserListRecord();
+        if (userListRecordList.isEmpty()) {
+            return new ResponseJson("user.list.not.found");
+        }
+        return new ResponseJson("user.list.found",  userListRecordList);
     }
 }

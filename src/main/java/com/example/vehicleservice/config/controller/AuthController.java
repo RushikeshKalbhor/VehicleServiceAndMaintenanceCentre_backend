@@ -95,4 +95,17 @@ public class AuthController {
     public ResponseEntity<ResponseJson> duplicateCheck(@RequestParam @NotBlank String username) {
         return ResponseEntity.status(HttpStatus.OK).body(authService.duplicateCheck(username));
     }
+
+    @Operation(summary = "Get user list", description = "This API is used to get user list", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "show Found/Not found",
+                    example = """
+                            user.list.found : User list found,
+                            user.list.not.found : User list not found
+                            """))) })
+    @GlobalApiResponses
+    @GetMapping("/user/list")
+    public ResponseEntity<ResponseJson> getUserList() {
+        return ResponseEntity.status(HttpStatus.OK).body(authService.getUserList());
+    }
 }
