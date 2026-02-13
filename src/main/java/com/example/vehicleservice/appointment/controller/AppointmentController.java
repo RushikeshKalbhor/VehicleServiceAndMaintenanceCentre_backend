@@ -39,7 +39,6 @@ public class AppointmentController {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows Success",
                     example = "appointment.book.success : Appointment book successfully")))})
     @GlobalApiResponses
-    @PreAuthorize("hasAuthority('customer')")
     @PostMapping("/customer/appointments")
     public ResponseEntity<ResponseJson> bookAppointment(@RequestParam @Min(1) @Max(8388607) Integer aptVehId,
                                                         @RequestParam @NotBlank String aptDate,
