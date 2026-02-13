@@ -94,7 +94,7 @@ public class AppointmentService {
         Map<String, Object> entityMap = new HashMap<>();
         pageNumber = pageNumber == null ? 1 : pageNumber;
         Pageable pageable = PageRequest.of(pageNumber - 1, 10);
-        List<Appointment> appointmentList = appointmentRepository.findAppointment(pageable);
+        List<AppointmentRecord> appointmentList = appointmentRepository.findAppointment(pageable);
         if (appointmentList.isEmpty()) {
             return new  ResponseJson("appointment.list.not.found");
         }

@@ -36,10 +36,22 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     """)
     List<Appointment> findAppointmentByAptMechanic(String aptMechanic);
 
-    @Query("FROM Appointment WHERE aptRecordStatus = 'approved'")
-    List<Appointment> findAppointment(Pageable pageable);
+    @Query("""
+    SELECT new com.example.vehicleservice.appointment.AppointmentRecord(a.aptId, a.aptStatus, a.aptProblemDescription, a.aptMechanic, a.aptVehId,
+    a.aptDate, a.aptCustomer, a.aptCreated, v.vehVehicleNumber, u.useTitle AS custTitle, u.useFirstName AS custFirstName, u.useSurname AS custSurname,
+    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname)
+    FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
+    JOIN User u ON u.useUsername = a.aptCustomer
+    LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptRecordStatus = 'approved'
+    """)
+    List<AppointmentRecord> findAppointment(Pageable pageable);
 
-    @Query("SELECT COUNT(aptId) FROM Appointment WHERE aptRecordStatus = 'approved'")
+    @Query("""
+        SELECT COUNT(a.aptId)
+        FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
+        JOIN User u ON u.useUsername = a.aptCustomer
+        LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptRecordStatus = 'approved'
+        """)
     Integer findAppointmentCount();
 
     @Modifying
