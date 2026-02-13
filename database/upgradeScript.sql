@@ -60,8 +60,25 @@ CREATE TABLE IF NOT EXISTS `appointments` (
   `apt_mechanic` VARCHAR(40) NULL COMMENT 'Username of the mechanic assigned to the appointment',
   `apt_created` DATETIME NOT NULL COMMENT 'Timestamp when the appointment was created',
   `apt_record_status` ENUM('approved', 'wrong') NOT NULL COMMENT 'Record status of the appointment',
-  PRIMARY KEY (`apt_id`)
-)ENGINE = InnoDB
+  PRIMARY KEY (`apt_id`))
+ENGINE = InnoDB
 COMMENT = 'Stores appointment details including date, problem description, status, customer, vehicle, and assigned mechanic.';
 
 INSERT INTO `vsamc`.`user_groups` (`usg_name`, `usg_description`, `usg_type`, `usg_created`) VALUES ('mechanic', 'This role is have all access for the mechanic', 'mechanic module access', '2026-02-01');
+
+CREATE TABLE IF NOT EXISTS `job_cards` (
+    `jc_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key for the job card table',
+    `jc_apt_id` MEDIUMINT UNSIGNED NOT NULL COMMENT 'Appointment ID linked to this job card',
+    `jc_status` VARCHAR(50) NOT NULL DEFAULT 'ASSIGNED' COMMENT 'Current status of the job card (e.g., ASSIGNED, IN_PROGRESS, DELIVERED)',
+    `jc_progress_percentage` MEDIUMINT UNSIGNED NULL COMMENT 'Progress percentage of the job card (0–100)',
+    `jc_inspection_notes` VARCHAR(2000) NULL COMMENT 'Inspection notes recorded by the service engineer',
+    `jc_work_done` VARCHAR(2000) NULL COMMENT 'Details of the work completed on the vehicle',
+    `jc_remarks` VARCHAR(2000) NULL COMMENT 'Additional remarks related to the job card',
+    `jc_created` DATETIME NOT NULL COMMENT 'Timestamp when the job card was created',
+    `jc_created_by` VARCHAR(40) NOT NULL COMMENT 'Username of the user who created the job card',
+    `jc_updated` DATETIME NULL COMMENT 'Timestamp when the job card was last updated',
+    `jc_updated_by` VARCHAR(40) NULL COMMENT 'Username of the user who last updated the job card',
+    `jc_record_status` ENUM('approved', 'wrong', 'updated') NOT NULL COMMENT 'record status of the job card',
+PRIMARY KEY (`jc_id`))
+ENGINE = InnoDB
+COMMENT = 'Stores job card details including status, progress, inspection notes, and audit information.';
