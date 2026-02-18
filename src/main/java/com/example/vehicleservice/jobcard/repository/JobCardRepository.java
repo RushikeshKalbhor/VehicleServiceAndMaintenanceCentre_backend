@@ -10,4 +10,8 @@ public interface JobCardRepository extends JpaRepository<JobCard, Integer> {
 
     @Query("FROM JobCard WHERE jcAptId = :jcAptId AND jcRecordStatus = 'approved'")
     JobCard findJobCardByJcAptId(Integer jcAptId);
+
+
+    @Query("SELECT jcId FROM JobCard WHERE jcAptId = :jcAptId AND jcRecordStatus = 'approved' ORDER BY jcId LIMIT 1")
+    Integer findJcIdByJcAptId(Integer jcAptId);
 }

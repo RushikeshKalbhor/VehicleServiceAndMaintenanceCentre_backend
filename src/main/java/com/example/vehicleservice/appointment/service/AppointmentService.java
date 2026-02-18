@@ -2,17 +2,21 @@ package com.example.vehicleservice.appointment.service;
 
 import com.example.vehicleservice.appointment.AppointmentRecord;
 import com.example.vehicleservice.appointment.model.Appointment;
+import com.example.vehicleservice.appointment.record.AdminAppointmentRecord;
 import com.example.vehicleservice.appointment.repository.AppointmentRepository;
 import com.example.vehicleservice.config.security.UserDetail;
 import com.example.vehicleservice.general.json.ResponseJson;
 import com.example.vehicleservice.general.util.DateUtils;
+import com.example.vehicleservice.jobcard.repository.JobCardRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,10 +26,13 @@ public class AppointmentService {
 
     private final DateUtils dateUtils;
     private final AppointmentRepository appointmentRepository;
+    private final JobCardRepository jobCardRepository;
 
-    public AppointmentService(DateUtils dateUtils,  AppointmentRepository appointmentRepository) {
+    public AppointmentService(DateUtils dateUtils,  AppointmentRepository appointmentRepository,
+                              JobCardRepository jobCardRepository) {
         this.dateUtils = dateUtils;
         this.appointmentRepository = appointmentRepository;
+        this.jobCardRepository = jobCardRepository;
     }
 
     // CUSTOMER
@@ -108,7 +115,19 @@ public class AppointmentService {
         if (appointmentList.isEmpty()) {
             return new  ResponseJson("appointment.list.not.found");
         }
-        entityMap.put("appointmentList", appointmentList);
+
+        List<AdminAppointmentRecord> finalAppointmentList = new ArrayList<>();
+        for (AppointmentRecord appointmentRecord : appointmentList) {
+            Integer jcId = jobCardRepository.findJcIdByJcAptId(appointmentRecord.aptId());
+            AdminAppointmentRecord  adminAppointmentRecord = new AdminAppointmentRecord(appointmentRecord.aptId(), appointmentRecord.aptStatus(), appointmentRecord.aptProblemDescription(),
+                    appointmentRecord.aptMechanic(), appointmentRecord.aptVehId(), appointmentRecord.aptDate(), appointmentRecord.aptCustomer(),
+                    appointmentRecord.aptCreated(), appointmentRecord.vehVehicleNumber(), appointmentRecord.custTitle(), appointmentRecord.custFirstName(),
+                    appointmentRecord.custSurname(), appointmentRecord.mechanicTitle(), appointmentRecord.mechanicFirstName(), appointmentRecord.mechanicSurname(),
+                    jcId);
+            finalAppointmentList.add(adminAppointmentRecord);
+        }
+
+        entityMap.put("appointmentList", finalAppointmentList);
         if (pageNumber == 1) {
             Integer appointmentCount = appointmentRepository.findAppointmentCount();
             entityMap.put("appointmentCount", appointmentCount);
