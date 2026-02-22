@@ -40,7 +40,7 @@ public class UserRegisterJson {
     private Integer useActive;
 
     @Schema(description = "This field will store the user type", example = "customer")
-    @Pattern(regexp = "^(customer|mechanic)$", message = "useType must be customer or mechanic")
+    @Pattern(regexp = "^(customer|mechanic|admin)$", message = "useType must be customer or mechanic")
     @NotBlank
     private String useType;
 

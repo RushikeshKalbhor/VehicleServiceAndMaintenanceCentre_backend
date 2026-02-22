@@ -15,6 +15,8 @@ import com.example.vehicleservice.general.DisplayRecordStatus;
 import com.example.vehicleservice.general.json.ResponseJson;
 import com.example.vehicleservice.general.util.ValidationUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -74,6 +76,7 @@ public class AuthService {
     }
 
     public ResponseJson register(UserRegisterJson userRegisterJson) {
+
         User user = new User();
         user.setUseUsername(userRegisterJson.getUseUsername());
         user.setUseTitle(userRegisterJson.getUseTitle());
@@ -306,11 +309,19 @@ public class AuthService {
         return new ResponseJson(userExist ? "user.already.exist" : "user.not.found");
     }
 
-    public ResponseJson getUserList() {
-        List<UserListRecord> userListRecordList = userRepository.findUserListRecord();
+    public ResponseJson getUserList(Integer pageNumber) {
+        Map<String, Object> entityMap = new HashMap<>();
+        pageNumber = pageNumber == null ? 1 : pageNumber;
+        Pageable pageable = PageRequest.of(pageNumber - 1, 10);
+        List<UserListRecord> userListRecordList = userRepository.findUserListRecord(pageable);
         if (userListRecordList.isEmpty()) {
             return new ResponseJson("user.list.not.found");
         }
-        return new ResponseJson("user.list.found",  userListRecordList);
+        entityMap.put("userList", userListRecordList);
+        if (pageNumber == 1) {
+            Integer userListCount = userRepository.findUserListCount();
+            entityMap.put("userListCount", userListCount);
+        }
+        return new ResponseJson("user.list.found",  entityMap);
     }
 }

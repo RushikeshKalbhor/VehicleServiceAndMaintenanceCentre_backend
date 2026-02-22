@@ -5,6 +5,7 @@ import com.example.vehicleservice.config.records.UserListRecord;
 import com.example.vehicleservice.config.records.UserLoginDetailsRecord;
 import com.example.vehicleservice.config.records.UserRecord;
 import com.example.vehicleservice.mechanic.records.MechanicRecord;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -61,5 +62,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
         SELECT new com.example.vehicleservice.config.records.UserListRecord(useUsername, useTitle, useFirstName, useSurname, useLoggedIn)
         FROM User WHERE useActive = 1
         """)
-    List<UserListRecord> findUserListRecord();
+    List<UserListRecord> findUserListRecord(Pageable pageable);
+
+    @Query("""
+        SELECT COUNT(useUsername) FROM User WHERE useActive = 1
+        """)
+    Integer findUserListCount();
 }

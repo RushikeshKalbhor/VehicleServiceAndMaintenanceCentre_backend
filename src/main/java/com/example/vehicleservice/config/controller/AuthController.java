@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +37,8 @@ public class AuthController {
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description ="<b>Required json: UserRegisterJson</b> <br>")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows Success",
-                    example = "user.registered.success : User added successfully")))})
+                    example = "user.registered.success : User added successfully," +
+                            "user.access.denied : User is not having access to add user")))})
     @GlobalApiResponses
     @PostMapping("/register")
     public ResponseEntity<ResponseJson> register(@RequestBody @Valid UserRegisterJson userRegisterJson) {
@@ -97,6 +100,7 @@ public class AuthController {
     }
 
     @Operation(summary = "Get user list", description = "This API is used to get user list", security = @SecurityRequirement(name = "bearerAuth"))
+    @Parameter(name = "pageNumber", description = "This is the page number", schema = @Schema(type = "integer", minimum = "1", maximum = "8388607"), required = false)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "show Found/Not found",
                     example = """
@@ -105,7 +109,7 @@ public class AuthController {
                             """))) })
     @GlobalApiResponses
     @GetMapping("/user/list")
-    public ResponseEntity<ResponseJson> getUserList() {
-        return ResponseEntity.status(HttpStatus.OK).body(authService.getUserList());
+    public ResponseEntity<ResponseJson> getUserList(@RequestParam (required = false) @Min(1) @Max(8388607) Integer pageNumber) {
+        return ResponseEntity.status(HttpStatus.OK).body(authService.getUserList(pageNumber));
     }
 }
