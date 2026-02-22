@@ -82,3 +82,17 @@ CREATE TABLE IF NOT EXISTS `job_cards` (
 PRIMARY KEY (`jc_id`))
 ENGINE = InnoDB
 COMMENT = 'Stores job card details including status, progress, inspection notes, and audit information.';
+
+CREATE TABLE IF NOT EXISTS `audit_logs` (
+    `al_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key for the audit logs table',
+    `al_username` VARCHAR(40) NOT NULL COMMENT 'Username of the user who performed the action',
+    `al_role` VARCHAR(30) NOT NULL COMMENT 'Role of the user (ADMIN, CUSTOMER, MECHANIC)',
+    `al_action` VARCHAR(50) NOT NULL COMMENT 'Action performed (CREATE, UPDATE, DELETE)',
+    `al_module` VARCHAR(50) NOT NULL COMMENT 'Module on which action was performed (VEHICLE, APPOINTMENT, JOB_CARD)',
+    `al_description` VARCHAR(2000) NULL COMMENT 'Additional details related to the action',
+    `al_ip_address` VARCHAR(45) NULL COMMENT 'IP address from which the action was performed',
+    `al_created` DATETIME NOT NULL COMMENT 'Timestamp when the audit log entry was created',
+    `al_record_status` ENUM('approved', 'wrong', 'updated') NOT NULL COMMENT 'Record status of the audit log',
+PRIMARY KEY (`al_id`))
+ENGINE = InnoDB
+COMMENT = 'Stores audit trail of user actions across modules including who performed what action and when.';
