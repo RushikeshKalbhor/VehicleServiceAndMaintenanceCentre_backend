@@ -324,4 +324,9 @@ public class AuthService {
         }
         return new ResponseJson("user.list.found",  entityMap);
     }
+
+    public ResponseJson getUserDetails(String useUsername) {
+        User user = userRepository.findByUseUsername(useUsername);
+        return user == null ? new ResponseJson("user.details.not.found") : new ResponseJson("user.details.found", user);
+    }
 }

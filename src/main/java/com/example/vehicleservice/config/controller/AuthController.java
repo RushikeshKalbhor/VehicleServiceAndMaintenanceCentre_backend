@@ -112,4 +112,19 @@ public class AuthController {
     public ResponseEntity<ResponseJson> getUserList(@RequestParam (required = false) @Min(1) @Max(8388607) Integer pageNumber) {
         return ResponseEntity.status(HttpStatus.OK).body(authService.getUserList(pageNumber));
     }
+
+    @Operation(summary = "Get user", description = "This API is used to get user details by useUsername", security = @SecurityRequirement(name = "bearerAuth"))
+    @Parameter(name = "useUsername", description = "This is the user username", schema = @Schema(type = "string", minLength = 1, maxLength = 40), required = true)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "show Found/Not found",
+                    example = """
+                            user.details.found : User details found,
+                            user.details.not.found : User details not found
+                            """))) })
+    @GlobalApiResponses
+    @GetMapping("/user")
+    public ResponseEntity<ResponseJson> getUserDetails(@RequestParam String useUsername) {
+        return ResponseEntity.status(HttpStatus.OK).body(authService.getUserDetails(useUsername));
+    }
+
 }
