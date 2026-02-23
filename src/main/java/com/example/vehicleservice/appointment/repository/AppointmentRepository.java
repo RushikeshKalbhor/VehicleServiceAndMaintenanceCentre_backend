@@ -47,7 +47,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     JOIN User u ON u.useUsername = a.aptCustomer
     LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptMechanic = :aptMechanic AND a.aptRecordStatus = 'approved'
     """)
-    Integer findAppointmentCountByAptMechanic(String username);
+    Integer findAppointmentCountByAptMechanic(String aptMechanic);
 
     @Query("""
     SELECT new com.example.vehicleservice.appointment.AppointmentRecord(a.aptId, a.aptStatus, a.aptProblemDescription, a.aptMechanic, a.aptVehId,
