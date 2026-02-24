@@ -6,6 +6,7 @@ import com.example.vehicleservice.config.AuthenticationTokensCache;
 import com.example.vehicleservice.config.JwtUtil;
 import com.example.vehicleservice.config.UserDetailsServiceImpl;
 import com.example.vehicleservice.config.json.LoginJson;
+import com.example.vehicleservice.config.json.UserEditJson;
 import com.example.vehicleservice.config.json.UserRegisterJson;
 import com.example.vehicleservice.config.records.UserListRecord;
 import com.example.vehicleservice.config.records.UserRecord;
@@ -328,5 +329,22 @@ public class AuthService {
     public ResponseJson getUserDetails(String useUsername) {
         User user = userRepository.findByUseUsername(useUsername);
         return user == null ? new ResponseJson("user.details.not.found") : new ResponseJson("user.details.found", user);
+    }
+
+    public ResponseJson editUserDetails(UserEditJson userEditJson) {
+
+        User user = userRepository.findByUseUsername(userEditJson.getUseUsername());
+        if (user == null) {
+            return new ResponseJson("user.details.not.found");
+        }
+        user.setUseTitle(userEditJson.getUseTitle());
+        user.setUseFirstName(userEditJson.getUseFirstName());
+        user.setUseSurname(userEditJson.getUseSurname());
+        user.setUseFullName(userEditJson.getUseFirstName() + " " + userEditJson.getUseSurname());
+        user.setUseActive(userEditJson.getUseActive().byteValue());
+        user.setUseEmail(userEditJson.getUseEmail());
+        user.setUseMobile(userEditJson.getUseMobile());
+        userRepository.save(user);
+        return new ResponseJson("user.details.update.successfully");
     }
 }

@@ -1,6 +1,7 @@
 package com.example.vehicleservice.config.controller;
 
 import com.example.vehicleservice.config.json.LoginJson;
+import com.example.vehicleservice.config.json.UserEditJson;
 import com.example.vehicleservice.config.json.UserRegisterJson;
 import com.example.vehicleservice.config.service.AuthService;
 import com.example.vehicleservice.general.json.ResponseJson;
@@ -125,6 +126,20 @@ public class AuthController {
     @GetMapping("/user")
     public ResponseEntity<ResponseJson> getUserDetails(@RequestParam String useUsername) {
         return ResponseEntity.status(HttpStatus.OK).body(authService.getUserDetails(useUsername));
+    }
+
+    @Operation(summary = "Modify user details", description = "This API is used to modify user details by useUsername", security = @SecurityRequirement(name = "bearerAuth"))
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description ="<b>Required json: UserEditJson</b> <br>")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "show Successful/Fail",
+                    example = """
+                            user.details.update.successfully : User details updated successfully,
+                            user.details.not.found : User details not found
+                            """))) })
+    @GlobalApiResponses
+    @PutMapping("/user")
+    public ResponseEntity<ResponseJson> editUserDetails(@RequestBody @Valid UserEditJson userEditJson) {
+        return ResponseEntity.status(HttpStatus.OK).body(authService.editUserDetails(userEditJson));
     }
 
 }
