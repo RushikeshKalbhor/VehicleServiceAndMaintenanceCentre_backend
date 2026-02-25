@@ -51,7 +51,6 @@ public class VehicleController {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows Found/ Not found",
                     example = "vehicle.not.found : Vehicle not found, vehicle.found : Vehicle details found")))})
     @GlobalApiResponses
-    @PreAuthorize("hasAuthority('customer')")
     @GetMapping("/customer/vehicles")
     public ResponseEntity<ResponseJson> getMyVehicles() {
         return ResponseEntity.status(HttpStatus.OK).body(vehicleService.getMyVehicles());
