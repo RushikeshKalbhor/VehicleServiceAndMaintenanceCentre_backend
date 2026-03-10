@@ -59,7 +59,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     List<MechanicRecord> findUserNameRecordByUsernameList(List<String> useUsername);
 
     @Query("""
-        SELECT new com.example.vehicleservice.config.records.UserListRecord(useUsername, useTitle, useFirstName, useSurname, useLoggedIn)
+        SELECT new com.example.vehicleservice.config.records.UserListRecord(useUsername, useTitle, useFirstName, useSurname, useLoggedIn, useType)
         FROM User WHERE useActive = 1
         """)
     List<UserListRecord> findUserListRecord(Pageable pageable);

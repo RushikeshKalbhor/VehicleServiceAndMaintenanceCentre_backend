@@ -16,9 +16,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     @Query("""
     SELECT new com.example.vehicleservice.appointment.AppointmentRecord(a.aptId, a.aptStatus, a.aptProblemDescription, a.aptMechanic, a.aptVehId,
     a.aptDate, a.aptCustomer, a.aptCreated, v.vehVehicleNumber, u.useTitle AS custTitle, u.useFirstName AS custFirstName, u.useSurname AS custSurname,
-    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname)
+    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname, jc.jcId)
     FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
     JOIN User u ON u.useUsername = a.aptCustomer
+    LEFT JOIN JobCard jc ON jc.jcAptId = a.aptId AND jc.jcRecordStatus = 'approved'
     LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptCustomer = :aptCustomer AND a.aptRecordStatus = 'approved'
     """)
     List<AppointmentRecord> findAppointmentRecordByAptCustomer(String aptCustomer);
@@ -34,9 +35,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     @Query("""
     SELECT new com.example.vehicleservice.appointment.AppointmentRecord(a.aptId, a.aptStatus, a.aptProblemDescription, a.aptMechanic, a.aptVehId,
     a.aptDate, a.aptCustomer, a.aptCreated, v.vehVehicleNumber, u.useTitle AS custTitle, u.useFirstName AS custFirstName, u.useSurname AS custSurname,
-    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname)
+    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname, jc.jcId)
     FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
     JOIN User u ON u.useUsername = a.aptCustomer
+    LEFT JOIN JobCard jc ON jc.jcAptId = a.aptId AND jc.jcRecordStatus = 'approved'
     LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptMechanic = :aptMechanic AND a.aptRecordStatus = 'approved' ORDER BY a.aptId DESC
     """)
     List<AppointmentRecord> findAppointmentByAptMechanic(String aptMechanic, Pageable pageable);
@@ -52,10 +54,12 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     @Query("""
     SELECT new com.example.vehicleservice.appointment.AppointmentRecord(a.aptId, a.aptStatus, a.aptProblemDescription, a.aptMechanic, a.aptVehId,
     a.aptDate, a.aptCustomer, a.aptCreated, v.vehVehicleNumber, u.useTitle AS custTitle, u.useFirstName AS custFirstName, u.useSurname AS custSurname,
-    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname)
+    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname, jc.jcId)
     FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
     JOIN User u ON u.useUsername = a.aptCustomer
-    LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptRecordStatus = 'approved' ORDER BY a.aptId DESC
+    LEFT JOIN User m ON m.useUsername = a.aptMechanic
+    LEFT JOIN JobCard jc ON jc.jcAptId = a.aptId AND jc.jcRecordStatus = 'approved'
+    WHERE a.aptRecordStatus = 'approved' ORDER BY a.aptId DESC
     """)
     List<AppointmentRecord> findAppointment(Pageable pageable);
 
