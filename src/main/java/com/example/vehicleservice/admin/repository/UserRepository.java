@@ -60,12 +60,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("""
         SELECT new com.example.vehicleservice.config.records.UserListRecord(useUsername, useTitle, useFirstName, useSurname, useLoggedIn, useType)
-        FROM User WHERE useActive = 1
+        FROM User
         """)
     List<UserListRecord> findUserListRecord(Pageable pageable);
 
     @Query("""
-        SELECT COUNT(useUsername) FROM User WHERE useActive = 1
+        SELECT COUNT(useUsername) FROM User
         """)
     Integer findUserListCount();
 }
