@@ -39,10 +39,33 @@ public class VehicleService {
     public ResponseJson getMyVehicles() {
         UserDetail userDetails = (UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<Vehicle> vehicleList = vehicleRepository.findVehicleByVehUseUsername(userDetails.getUsername());
+
+        List<String> username = vehicleList.stream().map(Vehicle :: getVehUseUsername).distinct().toList();
+        List<MechanicRecord> usernameList = userRepository.findUserNameRecordByUsernameList(username);
+
+        List<Map<String, Object>> finalVehicleList =  new ArrayList<>();
+        for (Vehicle vehicle : vehicleList) {
+            Map<String, Object> vehicleMap = new HashMap<>();
+            vehicleMap.put("vehId", vehicle.getVehId());
+            vehicleMap.put("vehBrand", vehicle.getVehBrand());
+            vehicleMap.put("vehCreated", vehicle.getVehCreated());
+            vehicleMap.put("vehManufacturingYear", vehicle.getVehManufacturingYear());
+            vehicleMap.put("vehModel", vehicle.getVehModel());
+            vehicleMap.put("vehRecordStatus", vehicle.getVehRecordStatus());
+            vehicleMap.put("vehUseUsername", vehicle.getVehUseUsername());
+            vehicleMap.put("vehVehicleNumber", vehicle.getVehVehicleNumber());
+            vehicleMap.put("vehVehicleType", vehicle.getVehVehicleType());
+            for (MechanicRecord userRecord : usernameList) {
+                if (userRecord.useUsername().equals(vehicle.getVehUseUsername())) {
+                    vehicleMap.put("userFullName", concatUserFullname(userRecord.useTitle(), userRecord.useFirstName(), userRecord.useSurname()));
+                }
+            }
+            finalVehicleList.add(vehicleMap);
+        }
         if (vehicleList.isEmpty()) {
             return new ResponseJson("vehicle.not.found");
         }
-        return new ResponseJson("vehicle.found", vehicleList);
+        return new ResponseJson("vehicle.found", finalVehicleList);
     }
 
     public ResponseJson getAllVehicles(Integer pageNumber) {
