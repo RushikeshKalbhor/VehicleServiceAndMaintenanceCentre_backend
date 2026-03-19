@@ -68,4 +68,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
         SELECT COUNT(useUsername) FROM User
         """)
     Integer findUserListCount();
+
+    @Modifying
+    @Query("UPDATE User SET usePassword = :usePassword WHERE useUsername = :useUsername")
+    int updateUsePasswordByUseUsername(String useUsername, String usePassword);
 }

@@ -37,10 +37,34 @@ public class EmailController {
     @Parameter(name = "username", description = "This is the username", schema = @Schema(type = "string", minLength = 1, maxLength = 40), required = true)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows Found/ Not found",
-                    example = "user.not.found : User not found, otp.sent : Otp sent successfully")))})
+                    example = "user.not.found : User not found, otp.sent.on.registerd.email : Otp sent successfully")))})
     @GlobalApiResponses
     @GetMapping("/email/otp/send")
-    public ResponseEntity<ResponseJson> getAllVehicles(@RequestParam @Size(max = 40) String username) {
+    public ResponseEntity<ResponseJson> otpSend(@RequestParam @Size(max = 40) String username) {
         return ResponseEntity.status(HttpStatus.OK).body(emailService.otpSend(username));
+    }
+
+    @Operation(summary = "Verify otp of user", description = "This API is used to verify user otp")
+    @Parameter(name = "username", description = "This is the username", schema = @Schema(type = "string", minLength = 1, maxLength = 40), required = true)
+    @Parameter(name = "otp", description = "This is the otp", schema = @Schema(type = "string", minLength = 6, maxLength = 6), required = true)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows matched/ Not matched",
+                    example = "otp.matched : User otp matched, otp.not.matched : Otp is not matched, user.not.found : User not found")))})
+    @GlobalApiResponses
+    @GetMapping("/email/otp/verify")
+    public ResponseEntity<ResponseJson> otpVerify(@RequestParam @Size(max = 40) String username, @RequestParam @Size(min = 6, max = 6) String otp) {
+        return ResponseEntity.status(HttpStatus.OK).body(emailService.otpVerify(username, otp));
+    }
+
+    @Operation(summary = "Confirm password", description = "This API is used to confirm password")
+    @Parameter(name = "username", description = "This is the username", schema = @Schema(type = "string", minLength = 1, maxLength = 40), required = true)
+    @Parameter(name = "password", description = "This is the password", schema = @Schema(type = "string", minLength = 8, maxLength = 20), required = true)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows found/ Not found",
+                    example = "password.updated : Password updated successfully, password.update.fail : Password update failed")))})
+    @GlobalApiResponses
+    @GetMapping("/confirm/password")
+    public ResponseEntity<ResponseJson> confirmPassword(@RequestParam @Size(max = 40) String username, @RequestParam @Size(min = 8, max = 20) String password) {
+        return ResponseEntity.status(HttpStatus.OK).body(emailService.confirmPassword(username, password));
     }
 }

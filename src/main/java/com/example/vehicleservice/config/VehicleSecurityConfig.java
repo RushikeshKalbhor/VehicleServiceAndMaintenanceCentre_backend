@@ -62,7 +62,9 @@ public class VehicleSecurityConfig {
                                 "/v3/api-docs/**",
                                 "/auth/register",
                                 "/auth/user/duplicate-check",
-                                "/email/otp/send"
+                                "/email/otp/send",
+                                "/email/otp/verify",
+                                "/confirm/password"
                         ).permitAll()
                         .anyRequest().authenticated()
                 );

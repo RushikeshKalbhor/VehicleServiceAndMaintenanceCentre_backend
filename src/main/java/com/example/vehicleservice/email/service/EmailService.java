@@ -9,7 +9,9 @@ import com.example.vehicleservice.general.json.ResponseJson;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -22,11 +24,15 @@ public class EmailService {
     private final SecureRandom random = new SecureRandom();
     private final UserOtpRepository userOtpRepository;
     private final VehiclePreferenceRepository  vehiclePreferenceRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public EmailService(UserRepository userRepository, UserOtpRepository userOtpRepository,  VehiclePreferenceRepository vehiclePreferenceRepository) {
+    public EmailService(UserRepository userRepository, UserOtpRepository userOtpRepository,
+                        VehiclePreferenceRepository vehiclePreferenceRepository,
+                        PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userOtpRepository = userOtpRepository;
         this.vehiclePreferenceRepository = vehiclePreferenceRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public ResponseJson otpSend(String username) {
@@ -47,7 +53,7 @@ public class EmailService {
 
         SimpleMailMessage message = getEmailContent(user, otp);
         javaMailSender.send(message);
-        return new ResponseJson("otp.sent");
+        return new ResponseJson("otp.sent.on.registerd.email");
     }
 
     public SimpleMailMessage getEmailContent(User user, String otp) {
@@ -83,4 +89,23 @@ public class EmailService {
         return mailSender;
     }
 
+    public ResponseJson otpVerify(String username, String otp) {
+        UserOtp userOtp = userOtpRepository.findUserOtpByUoUseUsername(username);
+        if (userOtp == null) {
+            return new ResponseJson("user.not.found");
+        }
+
+        if (userOtp.getUoExpiryTime().isBefore(LocalDateTime.now()) || !userOtp.getUoOtp().equals(otp)) {
+            return new ResponseJson("otp.not.matched");
+        }
+
+        return new ResponseJson("otp.matched");
+    }
+
+    @Transactional
+    public ResponseJson confirmPassword(String username, String password) {
+        String usePassword = passwordEncoder.encode(password);
+        int updateCount = userRepository.updateUsePasswordByUseUsername(username, usePassword);
+        return new ResponseJson(updateCount > 0 ? "password.updated" : "password.update.fail");
+    }
 }
