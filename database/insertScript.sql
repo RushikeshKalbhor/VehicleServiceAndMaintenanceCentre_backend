@@ -7,3 +7,6 @@ INSERT INTO `vsamc`.`user_groups` (`usg_name`, `usg_description`, `usg_type`, `u
 INSERT INTO `vsamc`.`user_groups` (`usg_name`, `usg_description`, `usg_type`, `usg_created`) VALUES ('customer', 'This role is have all access for the customer', 'customer module access', '2026-01-19');
 
 INSERT INTO `vsamc`.`user_groups` (`usg_name`, `usg_description`, `usg_type`, `usg_created`) VALUES ('mechanic', 'This role is have all access for the mechanic', 'mechanic module access', '2026-02-01');
+
+INSERT INTO `vsamc`.`vehicle_preferences` (`vep_name`, `vep_value`) VALUES ('email_username', 'kalbhorrushikesh9@gmail.com');
+INSERT INTO `vsamc`.`vehicle_preferences` (`vep_name`, `vep_value`) VALUES ('email_app_password', 'eihd evwr kmro autn');

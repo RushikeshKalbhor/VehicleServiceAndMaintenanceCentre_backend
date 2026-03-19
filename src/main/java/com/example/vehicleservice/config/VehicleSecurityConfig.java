@@ -61,7 +61,8 @@ public class VehicleSecurityConfig {
                                 "/swagger-resources/**",
                                 "/v3/api-docs/**",
                                 "/auth/register",
-                                "/auth/user/duplicate-check"
+                                "/auth/user/duplicate-check",
+                                "/email/otp/send"
                         ).permitAll()
                         .anyRequest().authenticated()
                 );

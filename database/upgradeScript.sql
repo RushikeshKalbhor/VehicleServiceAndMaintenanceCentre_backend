@@ -96,3 +96,16 @@ CREATE TABLE IF NOT EXISTS `audit_logs` (
 PRIMARY KEY (`al_id`))
 ENGINE = InnoDB
 COMMENT = 'Stores audit trail of user actions across modules including who performed what action and when.';
+
+INSERT INTO `vsamc`.`vehicle_preferences` (`vep_name`, `vep_value`) VALUES ('email_username', 'kalbhorrushikesh9@gmail.com');
+INSERT INTO `vsamc`.`vehicle_preferences` (`vep_name`, `vep_value`) VALUES ('email_app_password', 'eihd evwr kmro autn');
+
+CREATE TABLE IF NOT EXISTS `user_otp` (
+    `uo_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key for the user OTP table',
+    `uo_use_username` VARCHAR(100) NOT NULL COMMENT 'Username of the user requesting the OTP',
+    `uo_otp` VARCHAR(6) NOT NULL COMMENT 'One-Time Password sent to the user',
+    `uo_expiry_time` DATETIME NOT NULL COMMENT 'Expiry time of the OTP (validity period)',
+    `uo_created` DATETIME NOT NULL COMMENT 'Timestamp when the OTP was generated',
+PRIMARY KEY (`uo_id`))
+ENGINE = InnoDB
+COMMENT = 'Stores OTP details for users for password reset and authentication purposes.';
