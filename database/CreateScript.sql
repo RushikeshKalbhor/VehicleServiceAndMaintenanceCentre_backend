@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS `appointments` (
   `apt_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary Key for the appointment table',
   `apt_date` DATE NOT NULL COMMENT 'Appointment date selected by the customer',
   `apt_problem_description` VARCHAR(500) NULL COMMENT 'Problem description provided by the customer',
-  `apt_status` ENUM('PENDING', 'APPROVED', 'REJECTED', 'ASSIGNED') NOT NULL COMMENT 'Current status of the appointment',
+  `apt_status` VARCHAR(30) NOT NULL COMMENT 'Current status of the appointment',
   `apt_customer` VARCHAR(40) NOT NULL COMMENT 'Username of the customer who booked the appointment',
   `apt_veh_id` MEDIUMINT UNSIGNED NOT NULL COMMENT 'Vehicle ID linked to this appointment',
   `apt_mechanic` VARCHAR(40) NULL COMMENT 'Username of the mechanic assigned to the appointment',

@@ -7,6 +7,7 @@ import com.example.vehicleservice.jobcard.model.JobCard;
 import com.example.vehicleservice.jobcard.repository.JobCardRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -42,6 +43,7 @@ public class JobCardService {
     }
 
     // MECHANIC – update service progress
+    @Transactional
     public ResponseJson updateService(Integer jcId, String jcStatus, String jcInspectionNotes) {
         JobCard jobCard = jobCardRepository.findById(jcId).orElse(null);
         if (jobCard ==  null) {
@@ -69,6 +71,16 @@ public class JobCardService {
             }
         }
 
+        String aptStatus = switch (jcStatus) {
+            case "INSPECTION" -> "INSPECTION";
+            case "IN_PROGRESS" -> "IN PROGRESS";
+            case "QUALITY_CHECK" -> "QUALITY CHECK";
+            case "READY_FOR_DELIVERY" -> "READY FOR DELIVERY";
+            case "DELIVERED" -> "DELIVERED";
+            default -> jcStatus;
+        };
+
+        appointmentRepository.updateAptStatusByAptId(jobCard.getJcAptId(), aptStatus);
         jobCardRepository.save(jobCard);
         return new ResponseJson("job.card.update.success");
     }

@@ -40,7 +40,7 @@ public class AppointmentService {
         Appointment appointment = new Appointment();
         appointment.setAptDate(dateUtils.convertStringToLocalDate(aptDate));
         appointment.setAptProblemDescription(aptProblemDescription);
-        appointment.setAptStatus("pending");
+        appointment.setAptStatus("PENDING");
         appointment.setAptCustomer(userDetails.getUsername());
         appointment.setAptVehId(aptVehId);
         appointment.setAptCreated(LocalDateTime.now());
@@ -52,7 +52,7 @@ public class AppointmentService {
     // ADMIN
     @Transactional
     public ResponseJson approveAppointment(Integer aptId) {
-        int updatedAppointment = appointmentRepository.updateAptStatusByAptId(aptId, "approved");
+        int updatedAppointment = appointmentRepository.updateAptStatusByAptId(aptId, "APPROVED");
         if (updatedAppointment == 0) {
             return new ResponseJson("appointment.approval.failed");
         }
@@ -62,7 +62,7 @@ public class AppointmentService {
     // ADMIN
     @Transactional
     public ResponseJson rejectAppointment(Integer aptId) {
-        int updatedAppointment = appointmentRepository.updateAptStatusByAptId(aptId, "rejected");
+        int updatedAppointment = appointmentRepository.updateAptStatusByAptId(aptId, "REJECTED");
         if (updatedAppointment == 0) {
             return new ResponseJson("appointment.reject.failed");
         }
