@@ -65,9 +65,20 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     List<UserListRecord> findUserListRecord(Pageable pageable);
 
     @Query("""
+        SELECT new com.example.vehicleservice.config.records.UserListRecord(useUsername, useTitle, useFirstName, useSurname, useLoggedIn, useType)
+        FROM User WHERE useUsername LIKE %:useUsername%
+        """)
+    List<UserListRecord> findUserListRecordByUseUsername(String useUsername, Pageable pageable);
+
+    @Query("""
         SELECT COUNT(useUsername) FROM User
         """)
     Integer findUserListCount();
+
+    @Query("""
+        SELECT COUNT(useUsername) FROM User WHERE useUsername LIKE %:useUsername%
+        """)
+    Integer findUserListCountByUseUsername(String useUsername);
 
     @Modifying
     @Query("UPDATE User SET usePassword = :usePassword WHERE useUsername = :useUsername")

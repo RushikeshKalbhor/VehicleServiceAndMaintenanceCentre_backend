@@ -18,6 +18,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -101,6 +102,7 @@ public class AuthController {
     }
 
     @Operation(summary = "Get user list", description = "This API is used to get user list", security = @SecurityRequirement(name = "bearerAuth"))
+    @Parameter(name = "useUsername", description = "This is the username", schema = @Schema(type = "string", minLength = 1, maxLength = 40), required = false)
     @Parameter(name = "pageNumber", description = "This is the page number", schema = @Schema(type = "integer", minimum = "1", maximum = "8388607"), required = false)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "show Found/Not found",
@@ -110,8 +112,8 @@ public class AuthController {
                             """))) })
     @GlobalApiResponses
     @GetMapping("/user/list")
-    public ResponseEntity<ResponseJson> getUserList(@RequestParam (required = false) @Min(1) @Max(8388607) Integer pageNumber) {
-        return ResponseEntity.status(HttpStatus.OK).body(authService.getUserList(pageNumber));
+    public ResponseEntity<ResponseJson> getUserList(@RequestParam (required = false) @Size(min = 1, max = 40) String useUsername, @RequestParam (required = false) @Min(1) @Max(8388607) Integer pageNumber) {
+        return ResponseEntity.status(HttpStatus.OK).body(authService.getUserList(useUsername, pageNumber));
     }
 
     @Operation(summary = "Get user", description = "This API is used to get user details by useUsername", security = @SecurityRequirement(name = "bearerAuth"))

@@ -310,17 +310,27 @@ public class AuthService {
         return new ResponseJson(userExist ? "user.already.exist" : "user.not.found");
     }
 
-    public ResponseJson getUserList(Integer pageNumber) {
+    public ResponseJson getUserList(String useUsername, Integer pageNumber) {
         Map<String, Object> entityMap = new HashMap<>();
         pageNumber = pageNumber == null ? 1 : pageNumber;
         Pageable pageable = PageRequest.of(pageNumber - 1, 10);
-        List<UserListRecord> userListRecordList = userRepository.findUserListRecord(pageable);
+        List<UserListRecord> userListRecordList;
+        if (!validationUtil.isNullOrEmpty(useUsername)) {
+            userListRecordList = userRepository.findUserListRecordByUseUsername(useUsername, pageable);
+        } else {
+            userListRecordList = userRepository.findUserListRecord(pageable);
+        }
         if (userListRecordList.isEmpty()) {
             return new ResponseJson("user.list.not.found");
         }
         entityMap.put("userList", userListRecordList);
         if (pageNumber == 1) {
-            Integer userListCount = userRepository.findUserListCount();
+            Integer userListCount;
+            if (!validationUtil.isNullOrEmpty(useUsername)) {
+                userListCount = userRepository.findUserListCountByUseUsername(useUsername);
+            } else {
+                userListCount = userRepository.findUserListCount();
+            }
             entityMap.put("userListCount", userListCount);
         }
         return new ResponseJson("user.list.found",  entityMap);
