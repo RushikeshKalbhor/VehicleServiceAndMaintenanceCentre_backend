@@ -18,8 +18,14 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Integer> {
     @Query("FROM Vehicle WHERE vehRecordStatus = 'approved'")
     List<Vehicle> findVehicleByVehRecordStatus(Pageable pageable);
 
+    @Query("FROM Vehicle WHERE vehVehicleNumber LIKE %:vehVehicleNumber% AND vehRecordStatus = 'approved'")
+    List<Vehicle> findVehicleByVehRecordStatusAndVehVehicleNumber(String vehVehicleNumber, Pageable pageable);
+
     @Query("SELECT COUNT(vehId) FROM Vehicle WHERE vehRecordStatus = 'approved'")
     Integer findVehicleByVehRecordStatusAndPageNumber();
+
+    @Query("SELECT COUNT(vehId) FROM Vehicle WHERE vehVehicleNumber LIKE %:vehVehicleNumber% AND vehRecordStatus = 'approved'")
+    Integer findVehicleByVehRecordStatusAndPageNumberAndVehVehicleNumber(String vehVehicleNumber);
 
     @Query("SELECT COUNT(vehId) > 0 FROM Vehicle WHERE vehVehicleNumber = :vehVehicleNumber AND vehRecordStatus = 'approved'")
     boolean existVehicleByVehVehicleNumberAndVehRecordStatus(String vehVehicleNumber);

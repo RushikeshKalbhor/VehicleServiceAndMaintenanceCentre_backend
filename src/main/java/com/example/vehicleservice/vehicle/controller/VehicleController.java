@@ -58,6 +58,7 @@ public class VehicleController {
 
     // ADMIN
     @Operation(summary = "get all customer vehicle", description = "This API is used to get all customer vehicle", security = @SecurityRequirement(name = "bearerAuth"))
+    @Parameter(name = "vehicleNumber", description = "This is the vehicle number", schema = @Schema(type = "string", minLength = 6, maxLength = 10), required = false)
     @Parameter(name = "pageNumber", description = "This is the page number", schema = @Schema(type = "integer", minimum = "1", maximum = "8388607"), required = false)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows Found/ Not found",
@@ -65,8 +66,8 @@ public class VehicleController {
     @GlobalApiResponses
     @PreAuthorize("hasAuthority('admin')")
     @GetMapping("/admin/vehicles")
-    public ResponseEntity<ResponseJson> getAllVehicles(@RequestParam (required = false) @Min(1) @Max(8388607) Integer pageNumber) {
-        return ResponseEntity.status(HttpStatus.OK).body(vehicleService.getAllVehicles(pageNumber));
+    public ResponseEntity<ResponseJson> getAllVehicles(@RequestParam (required = false) @Size(min = 6, max = 10) String vehicleNumber, @RequestParam (required = false) @Min(1) @Max(8388607) Integer pageNumber) {
+        return ResponseEntity.status(HttpStatus.OK).body(vehicleService.getAllVehicles(vehicleNumber, pageNumber));
     }
 
     @Operation(summary = "Duplicate vehicle check", description = "This API is used to check vehicle is already present or not ", security = @SecurityRequirement(name = "bearerAuth"))

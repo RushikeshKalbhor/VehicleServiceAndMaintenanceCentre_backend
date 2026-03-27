@@ -68,10 +68,15 @@ public class VehicleService {
         return new ResponseJson("vehicle.found", finalVehicleList);
     }
 
-    public ResponseJson getAllVehicles(Integer pageNumber) {
+    public ResponseJson getAllVehicles(String vehicleNumber, Integer pageNumber) {
         pageNumber = pageNumber == null ? 1 : pageNumber;
         Pageable pageable = PageRequest.of(pageNumber - 1, 10);
-        List<Vehicle> vehicleList = vehicleRepository.findVehicleByVehRecordStatus(pageable);
+        List<Vehicle> vehicleList;
+        if (vehicleNumber != null &&  !vehicleNumber.isEmpty()) {
+            vehicleList = vehicleRepository.findVehicleByVehRecordStatusAndVehVehicleNumber(vehicleNumber, pageable);
+        } else {
+            vehicleList = vehicleRepository.findVehicleByVehRecordStatus(pageable);
+        }
         if (vehicleList.isEmpty()) {
             return new ResponseJson("vehicle.not.found");
         }
@@ -102,7 +107,13 @@ public class VehicleService {
         entityMap.put("finalVehicleList", finalVehicleList);
 
         if (pageNumber == 1) {
-            Integer vehicleCount = vehicleRepository.findVehicleByVehRecordStatusAndPageNumber();
+            Integer vehicleCount;
+            if (vehicleNumber != null &&  !vehicleNumber.isEmpty()) {
+                vehicleCount = vehicleRepository.findVehicleByVehRecordStatusAndPageNumberAndVehVehicleNumber(vehicleNumber);
+            } else {
+                vehicleCount = vehicleRepository.findVehicleByVehRecordStatusAndPageNumber();
+            }
+
             entityMap.put("vehicleCount", vehicleCount);
         }
         return new ResponseJson("vehicle.found", entityMap);
