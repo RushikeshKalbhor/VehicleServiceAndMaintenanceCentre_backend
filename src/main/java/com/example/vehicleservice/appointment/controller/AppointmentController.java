@@ -146,4 +146,17 @@ public class AppointmentController {
     public ResponseEntity<ResponseJson> deleteAppointment(@RequestParam @Min(1) @Max(8388607) Integer aptId) {
         return ResponseEntity.status(HttpStatus.OK).body(appointmentService.deleteAppointment(aptId));
     }
+
+    @Operation(summary = "Get today's appointment", description = "This API is used to get today's appointment", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "show Found/Not found",
+                    example = """
+                            today.appointment.details.found : Appointment details found successfully,
+                            today.appointment.details.not.found : Appointment details not found
+                            """))) })
+    @GlobalApiResponses
+    @GetMapping("/today/appointment")
+    public ResponseEntity<ResponseJson> getTodayAppointment() {
+        return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getTodayAppointment());
+    }
 }

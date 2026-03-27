@@ -10,10 +10,12 @@ import com.example.vehicleservice.general.util.DateUtils;
 import com.example.vehicleservice.jobcard.repository.JobCardRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -157,5 +159,22 @@ public class AppointmentService {
     public ResponseJson deleteAppointment(Integer aptId) {
         int deletedAppointment = appointmentRepository.deleteAppointmentByAptId(aptId);
         return new ResponseJson(deletedAppointment == 0 ? "appointment.delete.fail" : "appointment.delete.success");
+    }
+
+    public ResponseJson getTodayAppointment() {
+        UserDetail userDetails = (UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<String> userRolesList = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        Pageable pageable = PageRequest.of(0, 5);
+        List<AppointmentRecord> appointmentList = new ArrayList<>();
+        if (userRolesList.contains("admin")) {
+            appointmentList = appointmentRepository.findAppointmentByAptDate(LocalDate.now(), pageable);
+        } else if (userRolesList.contains("mechanic")) {
+            appointmentList = appointmentRepository.findAppointmentByAptMechanicAndAptDate(LocalDate.now(), userDetails.getUsername(), pageable);
+        } else if (userRolesList.contains("customer")) {
+            appointmentList = appointmentRepository.findAppointmentRecordByAptCustomerAndAptDate(LocalDate.now(), userDetails.getUsername());
+        }
+
+        return appointmentList.isEmpty() ? new ResponseJson("today.appointment.details.not.found") :
+                new ResponseJson("today.appointment.details.found", Map.of("appointmentList", appointmentList));
     }
 }

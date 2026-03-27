@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -24,6 +25,17 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     """)
     List<AppointmentRecord> findAppointmentRecordByAptCustomer(String aptCustomer);
 
+    @Query("""
+    SELECT new com.example.vehicleservice.appointment.AppointmentRecord(a.aptId, a.aptStatus, a.aptProblemDescription, a.aptMechanic, a.aptVehId,
+    a.aptDate, a.aptCustomer, a.aptCreated, v.vehVehicleNumber, u.useTitle AS custTitle, u.useFirstName AS custFirstName, u.useSurname AS custSurname,
+    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname, jc.jcId)
+    FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
+    JOIN User u ON u.useUsername = a.aptCustomer
+    LEFT JOIN JobCard jc ON jc.jcAptId = a.aptId AND jc.jcRecordStatus = 'approved'
+    LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptCustomer = :aptCustomer AND a.aptDate = :aptDate AND a.aptRecordStatus = 'approved' ORDER BY a.aptId DESC
+    """)
+    List<AppointmentRecord> findAppointmentRecordByAptCustomerAndAptDate(LocalDate aptDate, String aptCustomer);
+
     @Modifying
     @Query("UPDATE Appointment SET aptStatus = :aptStatus WHERE aptId = :aptId AND aptRecordStatus = 'approved'")
     int updateAptStatusByAptId(Integer aptId, String aptStatus);
@@ -31,6 +43,17 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     @Modifying
     @Query("UPDATE Appointment SET aptStatus = :aptStatus, aptMechanic = :aptMechanic WHERE aptId = :aptId AND aptRecordStatus = 'approved' AND aptStatus != 'REJECTED'")
     int updateAptMechanicAndAptStatusByAptId(Integer aptId, String aptMechanic, String aptStatus);
+
+    @Query("""
+    SELECT new com.example.vehicleservice.appointment.AppointmentRecord(a.aptId, a.aptStatus, a.aptProblemDescription, a.aptMechanic, a.aptVehId,
+    a.aptDate, a.aptCustomer, a.aptCreated, v.vehVehicleNumber, u.useTitle AS custTitle, u.useFirstName AS custFirstName, u.useSurname AS custSurname,
+    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname, jc.jcId)
+    FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
+    JOIN User u ON u.useUsername = a.aptCustomer
+    LEFT JOIN JobCard jc ON jc.jcAptId = a.aptId AND jc.jcRecordStatus = 'approved'
+    LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptMechanic = :aptMechanic AND a.aptDate = :aptDate AND a.aptRecordStatus = 'approved' ORDER BY a.aptId DESC
+    """)
+    List<AppointmentRecord> findAppointmentByAptMechanicAndAptDate(LocalDate aptDate, String aptMechanic, Pageable pageable);
 
     @Query("""
     SELECT new com.example.vehicleservice.appointment.AppointmentRecord(a.aptId, a.aptStatus, a.aptProblemDescription, a.aptMechanic, a.aptVehId,
@@ -83,6 +106,18 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     WHERE a.aptRecordStatus = 'approved' ORDER BY a.aptId DESC
     """)
     List<AppointmentRecord> findAppointment(Pageable pageable);
+
+    @Query("""
+    SELECT new com.example.vehicleservice.appointment.AppointmentRecord(a.aptId, a.aptStatus, a.aptProblemDescription, a.aptMechanic, a.aptVehId,
+    a.aptDate, a.aptCustomer, a.aptCreated, v.vehVehicleNumber, u.useTitle AS custTitle, u.useFirstName AS custFirstName, u.useSurname AS custSurname,
+    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname, jc.jcId)
+    FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
+    JOIN User u ON u.useUsername = a.aptCustomer
+    LEFT JOIN User m ON m.useUsername = a.aptMechanic
+    LEFT JOIN JobCard jc ON jc.jcAptId = a.aptId AND jc.jcRecordStatus = 'approved'
+    WHERE a.aptRecordStatus = 'approved' AND a.aptDate = :aptDate ORDER BY a.aptId DESC
+    """)
+    List<AppointmentRecord> findAppointmentByAptDate(LocalDate aptDate, Pageable pageable);
 
     @Query("""
     SELECT new com.example.vehicleservice.appointment.AppointmentRecord(a.aptId, a.aptStatus, a.aptProblemDescription, a.aptMechanic, a.aptVehId,
