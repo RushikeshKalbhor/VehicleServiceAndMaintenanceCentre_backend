@@ -20,7 +20,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
     JOIN User u ON u.useUsername = a.aptCustomer
     LEFT JOIN JobCard jc ON jc.jcAptId = a.aptId AND jc.jcRecordStatus = 'approved'
-    LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptCustomer = :aptCustomer AND a.aptRecordStatus = 'approved'
+    LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptCustomer = :aptCustomer AND a.aptRecordStatus = 'approved' ORDER BY a.aptId DESC
     """)
     List<AppointmentRecord> findAppointmentRecordByAptCustomer(String aptCustomer);
 
@@ -44,12 +44,33 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     List<AppointmentRecord> findAppointmentByAptMechanic(String aptMechanic, Pageable pageable);
 
     @Query("""
+    SELECT new com.example.vehicleservice.appointment.AppointmentRecord(a.aptId, a.aptStatus, a.aptProblemDescription, a.aptMechanic, a.aptVehId,
+    a.aptDate, a.aptCustomer, a.aptCreated, v.vehVehicleNumber, u.useTitle AS custTitle, u.useFirstName AS custFirstName, u.useSurname AS custSurname,
+    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname, jc.jcId)
+    FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
+    JOIN User u ON u.useUsername = a.aptCustomer
+    LEFT JOIN JobCard jc ON jc.jcAptId = a.aptId AND jc.jcRecordStatus = 'approved'
+    LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptMechanic = :aptMechanic AND a.aptRecordStatus = 'approved'
+    AND v.vehVehicleNumber like %:vehVehicleNumber% ORDER BY a.aptId DESC
+    """)
+    List<AppointmentRecord> findAppointmentByAptMechanicAndVehicleNumber(String vehVehicleNumber, String aptMechanic, Pageable pageable);
+
+    @Query("""
     SELECT COUNT(a.aptId)
     FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
     JOIN User u ON u.useUsername = a.aptCustomer
     LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptMechanic = :aptMechanic AND a.aptRecordStatus = 'approved'
     """)
     Integer findAppointmentCountByAptMechanic(String aptMechanic);
+
+    @Query("""
+    SELECT COUNT(a.aptId)
+    FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
+    JOIN User u ON u.useUsername = a.aptCustomer
+    LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptMechanic = :aptMechanic AND a.aptRecordStatus = 'approved'
+    AND v.vehVehicleNumber like %:vehVehicleNumber%
+    """)
+    Integer findAppointmentCountByAptMechanicAndVehVehicleNumber(String vehVehicleNumber, String aptMechanic);
 
     @Query("""
     SELECT new com.example.vehicleservice.appointment.AppointmentRecord(a.aptId, a.aptStatus, a.aptProblemDescription, a.aptMechanic, a.aptVehId,
@@ -64,12 +85,32 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     List<AppointmentRecord> findAppointment(Pageable pageable);
 
     @Query("""
+    SELECT new com.example.vehicleservice.appointment.AppointmentRecord(a.aptId, a.aptStatus, a.aptProblemDescription, a.aptMechanic, a.aptVehId,
+    a.aptDate, a.aptCustomer, a.aptCreated, v.vehVehicleNumber, u.useTitle AS custTitle, u.useFirstName AS custFirstName, u.useSurname AS custSurname,
+    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname, jc.jcId)
+    FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
+    JOIN User u ON u.useUsername = a.aptCustomer
+    LEFT JOIN User m ON m.useUsername = a.aptMechanic
+    LEFT JOIN JobCard jc ON jc.jcAptId = a.aptId AND jc.jcRecordStatus = 'approved'
+    WHERE a.aptRecordStatus = 'approved' AND v.vehVehicleNumber like %:vehVehicleNumber% ORDER BY a.aptId DESC
+    """)
+    List<AppointmentRecord> findAppointmentByVehicleNumber(String vehVehicleNumber, Pageable pageable);
+
+    @Query("""
         SELECT COUNT(a.aptId)
         FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
         JOIN User u ON u.useUsername = a.aptCustomer
         LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptRecordStatus = 'approved'
         """)
     Integer findAppointmentCount();
+
+    @Query("""
+        SELECT COUNT(a.aptId)
+        FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
+        JOIN User u ON u.useUsername = a.aptCustomer
+        LEFT JOIN User m ON m.useUsername = a.aptMechanic WHERE a.aptRecordStatus = 'approved' AND v.vehVehicleNumber like %:vehVehicleNumber%
+        """)
+    Integer findAppointmentVehicleCount(String vehVehicleNumber);
 
     @Modifying
     @Query("UPDATE Appointment SET aptRecordStatus = 'wrong' WHERE aptId = :aptId AND aptRecordStatus = 'approved'")
