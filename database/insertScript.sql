@@ -10,3 +10,4 @@ INSERT INTO `vsamc`.`user_groups` (`usg_name`, `usg_description`, `usg_type`, `u
 
 INSERT INTO `vsamc`.`vehicle_preferences` (`vep_name`, `vep_value`) VALUES ('email_username', 'kalbhorrushikesh9@gmail.com');
 INSERT INTO `vsamc`.`vehicle_preferences` (`vep_name`, `vep_value`) VALUES ('email_app_password', 'eihd evwr kmro autn');
+INSERT INTO `vsamc`.`vehicle_preferences` (`vep_name`, `vep_value`) VALUES ('email_setting', 'true');

@@ -112,3 +112,5 @@ COMMENT = 'Stores OTP details for users for password reset and authentication pu
 
 ALTER TABLE appointments MODIFY COLUMN apt_status VARCHAR(30) NOT NULL COMMENT 'Current status of the appointment';
 update appointments a join job_cards b on b.jc_apt_id = a.apt_id set a.apt_status = (SELECT jc_status from job_cards c where a.apt_id = c.jc_apt_id);
+
+INSERT INTO `vsamc`.`vehicle_preferences` (`vep_name`, `vep_value`) VALUES ('email_setting', 'true');

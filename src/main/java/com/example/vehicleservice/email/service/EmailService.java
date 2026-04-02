@@ -49,10 +49,13 @@ public class EmailService {
         userOtp.setUoCreated(LocalDateTime.now());
         userOtpRepository.save(userOtp);
 
-        JavaMailSender javaMailSender = getMailSenderFromDb();
+        String emailSetting = vehiclePreferenceRepository.findVehiclePreferenceCecValueByCecName("email_setting");
 
-        SimpleMailMessage message = getEmailContent(user, otp);
-        javaMailSender.send(message);
+        if ("true".equals(emailSetting)) {
+            JavaMailSender javaMailSender = getMailSenderFromDb();
+            SimpleMailMessage message = getEmailContent(user, otp);
+            javaMailSender.send(message);
+        }
         return new ResponseJson("otp.sent.on.registerd.email");
     }
 
