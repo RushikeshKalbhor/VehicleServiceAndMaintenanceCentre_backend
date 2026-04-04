@@ -5,6 +5,7 @@ import com.example.vehicleservice.appointment.model.Appointment;
 import com.example.vehicleservice.appointment.record.AdminAppointmentRecord;
 import com.example.vehicleservice.appointment.repository.AppointmentRepository;
 import com.example.vehicleservice.config.security.UserDetail;
+import com.example.vehicleservice.email.service.CommunicationAsyncService;
 import com.example.vehicleservice.general.json.ResponseJson;
 import com.example.vehicleservice.general.util.DateUtils;
 import com.example.vehicleservice.jobcard.repository.JobCardRepository;
@@ -28,12 +29,14 @@ public class AppointmentService {
     private final DateUtils dateUtils;
     private final AppointmentRepository appointmentRepository;
     private final JobCardRepository jobCardRepository;
+    private final CommunicationAsyncService communicationAsyncService;
 
     public AppointmentService(DateUtils dateUtils,  AppointmentRepository appointmentRepository,
-                              JobCardRepository jobCardRepository) {
+                              JobCardRepository jobCardRepository, CommunicationAsyncService communicationAsyncService) {
         this.dateUtils = dateUtils;
         this.appointmentRepository = appointmentRepository;
         this.jobCardRepository = jobCardRepository;
+        this.communicationAsyncService = communicationAsyncService;
     }
 
     // CUSTOMER
@@ -47,7 +50,8 @@ public class AppointmentService {
         appointment.setAptVehId(aptVehId);
         appointment.setAptCreated(LocalDateTime.now());
         appointment.setAptRecordStatus("approved");
-        appointmentRepository.save(appointment);
+        appointment = appointmentRepository.save(appointment);
+        communicationAsyncService.sendBookAppointmentEmail(userDetails.getUsername(), appointment.getAptId(), aptDate);
         return new  ResponseJson("appointment.book.success");
     }
 
@@ -58,6 +62,7 @@ public class AppointmentService {
         if (updatedAppointment == 0) {
             return new ResponseJson("appointment.approval.failed");
         }
+        communicationAsyncService.appointmentApproveEmail(aptId);
         return new ResponseJson("appointment.approved");
     }
 

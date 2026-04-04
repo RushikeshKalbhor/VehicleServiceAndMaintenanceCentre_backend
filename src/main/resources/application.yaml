@@ -24,3 +24,9 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
+
+asyncExecutor:
+  corePoolSize : 10 #10 threads always kept alive
+  maxPoolSize : 25  #Up to 25 threads during high load
+  queueCapacity : 100 #Holds 100 waiting tasks
+  threadNamePrefix : AsyncExecutor- #prefix used for naming the threads

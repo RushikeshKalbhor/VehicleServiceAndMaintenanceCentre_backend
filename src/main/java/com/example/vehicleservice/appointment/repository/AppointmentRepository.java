@@ -154,4 +154,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     @Query("SELECT aptMechanic FROM Appointment WHERE aptId = :aptId AND aptRecordStatus = 'approved'")
     String findAptMechanicByAptId(Integer aptId);
 
+    @Query("FROM Appointment WHERE aptId = :aptId AND aptRecordStatus = 'approved'")
+    Appointment findAppointmentByAptId(Integer aptId);
 }

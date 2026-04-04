@@ -120,7 +120,7 @@ public class AppointmentController {
 
     // ADMIN
     @Operation(summary = "Get admin appointment", description = "This API is used to get admin appointment list", security = @SecurityRequirement(name = "bearerAuth"))
-    @Parameter(name = "vehicleNumber", description = "This is the vehicle number", schema = @Schema(type = "string", minLength = 6, maxLength = 10), required = false)
+    @Parameter(name = "vehicleNumber", description = "This is the vehicle number", schema = @Schema(type = "string", minLength = 6, maxLength = 15), required = false)
     @Parameter(name = "pageNumber", description = "This is the page number", schema = @Schema(type = "integer", minimum = "1", maximum = "8388607"), required = false)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows found/not found",
@@ -129,7 +129,7 @@ public class AppointmentController {
     @GlobalApiResponses
     @PreAuthorize("hasAuthority('admin')")
     @GetMapping("/admin/appointments/list")
-    public ResponseEntity<ResponseJson> getAdminAppointmentList(@RequestParam (required = false) @Size(min = 6, max = 10) String vehicleNumber, @RequestParam (required = false) @Min(1) @Max(8388607) Integer pageNumber) {
+    public ResponseEntity<ResponseJson> getAdminAppointmentList(@RequestParam (required = false) @Size(min = 6, max = 15) String vehicleNumber, @RequestParam (required = false) @Min(1) @Max(8388607) Integer pageNumber) {
         return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getAdminAppointmentList(vehicleNumber, pageNumber));
     }
 

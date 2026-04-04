@@ -75,7 +75,7 @@ public class EmailService {
         return message;
     }
 
-    private JavaMailSender getMailSenderFromDb() {
+    public JavaMailSender getMailSenderFromDb() {
         String emailUsername = vehiclePreferenceRepository.findVehiclePreferenceCecValueByCecName("email_username");
         String emailAppPassword = vehiclePreferenceRepository.findVehiclePreferenceCecValueByCecName("email_app_password");
 
@@ -110,5 +110,63 @@ public class EmailService {
         String usePassword = passwordEncoder.encode(password);
         int updateCount = userRepository.updateUsePasswordByUseUsername(username, usePassword);
         return new ResponseJson(updateCount > 0 ? "password.updated" : "password.update.fail");
+    }
+
+    public SimpleMailMessage getAppointmentConfirmationEmail(User user, Integer appointmentId, String date) {
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setTo(user.getUseEmail());
+        message.setSubject("Appointment Booked Successfully");
+
+        message.setText(
+                "Dear " + user.getUseFullName() + ",\n\n" +
+
+                        "Your appointment has been successfully booked with the Vehicle Service and Maintenance Centre.\n\n" +
+
+                        "Appointment Details:\n" +
+                        "Appointment ID : " + appointmentId + "\n" +
+                        "Date           : " + date + "\n" +
+
+                        "Please arrive 10 minutes before your scheduled time.\n\n" +
+
+                        "If you need to reschedule or cancel your appointment, please contact us.\n\n" +
+
+                        "Thank you for choosing our service.\n\n" +
+
+                        "Regards,\n" +
+                        "Vehicle Service and Maintenance Centre Team"
+        );
+        return message;
+    }
+
+    public SimpleMailMessage getAppointmentApprovedEmail(User user,
+                                                         Integer appointmentId,
+                                                         String date) {
+
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setTo(user.getUseEmail());
+        message.setSubject("Appointment Approved");
+
+        message.setText(
+                "Dear " + user.getUseFullName() + ",\n\n" +
+
+                        "We are pleased to inform you that your appointment has been approved.\n\n" +
+
+                        "Appointment Details:\n" +
+                        "Appointment ID : " + appointmentId + "\n" +
+                        "Date           : " + date + "\n" +
+
+                        "Please ensure that you arrive 10 minutes before the scheduled time.\n\n" +
+
+                        "If you have any questions or need to make changes, feel free to contact us.\n\n" +
+
+                        "We look forward to serving you.\n\n" +
+
+                        "Regards,\n" +
+                        "Vehicle Service and Maintenance Centre Team"
+        );
+
+        return message;
     }
 }
