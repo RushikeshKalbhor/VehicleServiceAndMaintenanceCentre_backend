@@ -20,7 +20,13 @@ public class Bill {
     private Integer bJcId;
 
     @Column(name = "b_total")
-    private Integer bTotal;
+    private Double bTotal;
+
+    @Column(name = "b_discount")
+    private Integer bDiscount;
+
+    @Column(name = "b_final_total")
+    private Double bFinalTotal;
 
     @Column(name = "b_status")
     private String bStatus;
@@ -64,12 +70,28 @@ public class Bill {
         this.bJcId = bJcId;
     }
 
-    public Integer getbTotal() {
+    public Integer getbDiscount() {
+        return bDiscount;
+    }
+
+    public void setbDiscount(Integer bDiscount) {
+        this.bDiscount = bDiscount;
+    }
+
+    public Double getbTotal() {
         return bTotal;
     }
 
-    public void setbTotal(Integer bTotal) {
+    public void setbTotal(Double bTotal) {
         this.bTotal = bTotal;
+    }
+
+    public Double getbFinalTotal() {
+        return bFinalTotal;
+    }
+
+    public void setbFinalTotal(Double bFinalTotal) {
+        this.bFinalTotal = bFinalTotal;
     }
 
     public String getbStatus() {

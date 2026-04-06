@@ -195,3 +195,34 @@ CREATE TABLE IF NOT EXISTS `user_otp` (
 PRIMARY KEY (`uo_id`))
 ENGINE = InnoDB
 COMMENT = 'Stores OTP details for users for password reset and authentication purposes.';
+
+CREATE TABLE IF NOT EXISTS `bills` (
+    `b_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key for the bill table',
+    `b_apt_id` MEDIUMINT UNSIGNED NOT NULL COMMENT 'Appointment ID linked to this bill',
+    `b_jc_id` MEDIUMINT UNSIGNED NOT NULL COMMENT 'Job card ID linked to this bill',
+    `b_total` DECIMAL(10,2) NULL COMMENT 'Total amount before discount',
+    `b_discount` MEDIUMINT UNSIGNED NULL COMMENT 'Discount percentage applied on total bill',
+    `b_final_total` DECIMAL(10,2) NULL COMMENT 'Final bill amount after applying discount',
+    `b_status` VARCHAR(50) NULL COMMENT 'Current status of the bill (e.g., GENERATED, PAID, CANCELLED)',
+    `b_record_status` ENUM('approved', 'wrong', 'updated') NOT NULL COMMENT 'Record status of the bill',
+    `b_created` DATETIME NOT NULL COMMENT 'Timestamp when the bill was created',
+    `b_created_by` VARCHAR(40) NOT NULL COMMENT 'Username of the user who created the bill',
+    `b_updated` DATETIME NULL COMMENT 'Timestamp when the bill was last updated',
+    `b_updated_by` VARCHAR(40) NULL COMMENT 'Username of the user who last updated the bill',
+PRIMARY KEY (`b_id`))
+ENGINE = InnoDB
+COMMENT = 'Stores billing details including totals, discount, status, and audit information.';
+
+CREATE TABLE IF NOT EXISTS `bill_items` (
+    `bi_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key for the bill items table',
+    `bi_b_id` MEDIUMINT UNSIGNED NOT NULL COMMENT 'Bill ID linked to this item',
+    `bi_service_name` VARCHAR(255) NOT NULL COMMENT 'Name of the service performed (e.g., Oil Change)',
+    `bi_quantity` MEDIUMINT UNSIGNED NOT NULL COMMENT 'Quantity of the service or item',
+    `bi_rate` DECIMAL(10,2) NOT NULL COMMENT 'Rate per unit of the service/item',
+    `bi_total` DECIMAL(10,2) NOT NULL COMMENT 'Total amount for this item (quantity × rate)',
+    `bi_record_status` ENUM('approved', 'wrong', 'updated') NOT NULL COMMENT 'Record status of the bill item',
+    `bi_created` DATETIME NOT NULL COMMENT 'Timestamp when the bill item was created',
+    `bi_created_by` VARCHAR(40) NOT NULL COMMENT 'Username of the user who created the bill item',
+PRIMARY KEY (`bi_id`))
+ENGINE = InnoDB
+COMMENT = 'Stores individual bill item details including service name, quantity, rate, total, and audit information.';

@@ -1,7 +1,9 @@
 package com.example.vehicleservice.finance.service;
 
 import com.example.vehicleservice.appointment.repository.AppointmentRepository;
+import com.example.vehicleservice.finance.json.AddBillJson;
 import com.example.vehicleservice.finance.records.FinaceBillListRecord;
+import com.example.vehicleservice.finance.util.FinanceUtil;
 import com.example.vehicleservice.general.json.ResponseJson;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,9 +17,11 @@ import java.util.Map;
 public class FinanceService {
 
     private final AppointmentRepository appointmentRepository;
+    private final FinanceUtil financeUtil;
 
-    public FinanceService(AppointmentRepository appointmentRepository) {
+    public FinanceService(AppointmentRepository appointmentRepository, FinanceUtil financeUtil) {
         this.appointmentRepository = appointmentRepository;
+        this.financeUtil = financeUtil;
     }
 
     public ResponseJson getFinanceBillList(String vehicleNumber, Integer pageNumber) {
@@ -46,5 +50,10 @@ public class FinanceService {
             entityMap.put("financeBillListCount", financeBillListCount);
         }
         return new ResponseJson("finance.bill.list.found", entityMap);
+    }
+
+    public ResponseJson addBill(AddBillJson addBillJson) {
+        financeUtil.addBillAndBillItem(addBillJson);
+        return new ResponseJson("finance.bill.add.success");
     }
 }
