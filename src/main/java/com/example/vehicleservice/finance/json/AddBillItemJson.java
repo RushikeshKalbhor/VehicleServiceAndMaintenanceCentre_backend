@@ -11,6 +11,11 @@ import jakarta.validation.constraints.Size;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AddBillItemJson {
 
+    @Schema(description = "This field will store the bill item", example = "1")
+    @Min(1)
+    @Max(8388607)
+    private Integer biId;
+
     @Schema(description = "This field will store the service name", example = "oil change")
     @Size(min = 1, max = 100)
     private String biServiceName;
@@ -26,6 +31,14 @@ public class AddBillItemJson {
 
     @Schema(description = "This field will store the total of that service", example = "100")
     private Double biTotal;
+
+    public Integer getBiId() {
+        return biId;
+    }
+
+    public void setBiId(Integer biId) {
+        this.biId = biId;
+    }
 
     public String getBiServiceName() {
         return biServiceName;

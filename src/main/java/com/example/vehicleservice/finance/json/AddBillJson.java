@@ -16,6 +16,12 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AddBillJson {
 
+    @Schema(description = "This field will store the bill id", example = "1")
+    @Min(1)
+    @Max(8388607)
+    @JsonProperty("bId")
+    private Integer bId;
+
     @Schema(description = "This field will store the appointment id", example = "1")
     @NotNull
     @Min(1)
@@ -49,6 +55,15 @@ public class AddBillJson {
     @Schema(description = "This field will store the final item")
     @NotEmpty
     private List<@Valid AddBillItemJson> addBillItemJson;
+
+    @JsonIgnore
+    public Integer getBId() {
+        return bId;
+    }
+
+    public void setBId(Integer bId) {
+        this.bId = bId;
+    }
 
     @JsonIgnore
     public Integer getBAptId() {

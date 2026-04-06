@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class FinanceUtil {
@@ -58,5 +59,27 @@ public class FinanceUtil {
             billItemList.add(billItem);
         }
         billItemRepository.saveAll(billItemList);
+    }
+
+    public void updateBill(AddBillJson addBillJson, Bill bill) {
+        UserDetail userDetails = (UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        bill.setBTotal(addBillJson.getBTotal());
+        bill.setBDiscount(addBillJson.getBDiscount());
+        bill.setBFinalTotal(addBillJson.getBFinalTotal());
+        bill.setBUpdated(LocalDateTime.now());
+        bill.setBUpdatedBy(userDetails.getUsername());
+        billRepository.save(bill);
+    }
+
+    public void updateBillItem(AddBillJson addBillJson) {
+        UserDetail userDetails = (UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // delete existing bill item
+        List<Integer> billItemIds = addBillJson.getAddBillItemJson().stream().map(AddBillItemJson :: getBiId).filter(Objects::nonNull).toList();
+        billItemRepository.deleteAllById(billItemIds);
+
+        // add new bill item
+        addBillItem(addBillJson.getAddBillItemJson(), addBillJson.getBId(), userDetails.getUsername());
+
     }
 }

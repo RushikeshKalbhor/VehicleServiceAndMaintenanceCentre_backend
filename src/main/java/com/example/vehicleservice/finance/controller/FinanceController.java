@@ -66,4 +66,20 @@ public class FinanceController {
     public ResponseEntity<ResponseJson> addBillExtraDetails(@RequestParam Integer bId) {
         return ResponseEntity.status(HttpStatus.OK).body(financeService.addBillExtraDetails(bId));
     }
+
+    @Operation(summary = "Edit bill", description = "This API is used to edit bill", security = @SecurityRequirement(name = "bearerAuth"))
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description ="<b>Required json: AddBillJson</b> <br>")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows Success",
+                    example = """
+                            finance.bill.edit.success : Finance bill edited successfully,
+                            finance.bill.edit.fail : Failed to edit finance bill,
+                            bId.is.mandatory : bId is mandatory,
+                            biId.is.mandatory : biId is mandatory
+                            """)))})
+    @GlobalApiResponses
+    @PutMapping("/edit-bill")
+    public ResponseEntity<ResponseJson> editBill(@RequestBody @Valid AddBillJson addBillJson) {
+        return ResponseEntity.status(HttpStatus.OK).body(financeService.editBill(addBillJson));
+    }
 }
