@@ -2,6 +2,7 @@ package com.example.vehicleservice.appointment.repository;
 
 import com.example.vehicleservice.appointment.AppointmentRecord;
 import com.example.vehicleservice.appointment.model.Appointment;
+import com.example.vehicleservice.finance.records.FinaceBillListRecord;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -156,4 +157,45 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
 
     @Query("FROM Appointment WHERE aptId = :aptId AND aptRecordStatus = 'approved'")
     Appointment findAppointmentByAptId(Integer aptId);
+
+    @Query("""
+    SELECT new com.example.vehicleservice.finance.records.FinaceBillListRecord(v.vehId, v.vehVehicleNumber, v.vehVehicleType, v.vehModel,
+    a.aptId, a.aptDate, a.aptStatus, a.aptCreated, u.useTitle AS custTitle, u.useFirstName AS custFirstName, u.useSurname AS custSurname,
+    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname)
+    FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
+    JOIN User u ON u.useUsername = a.aptCustomer
+    LEFT JOIN User m ON m.useUsername = a.aptMechanic
+    WHERE a.aptStatus IN ('READY FOR DELIVERY', 'DELIVERED') AND a.aptRecordStatus = 'approved' ORDER BY aptId DESC
+    """)
+    List<FinaceBillListRecord> findFinanceBillListRecordByAptStatus(Pageable pageable);
+
+
+    @Query("""
+    SELECT new com.example.vehicleservice.finance.records.FinaceBillListRecord(v.vehId, v.vehVehicleNumber, v.vehVehicleType, v.vehModel,
+    a.aptId, a.aptDate, a.aptStatus, a.aptCreated, u.useTitle AS custTitle, u.useFirstName AS custFirstName, u.useSurname AS custSurname,
+    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname)
+    FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
+    JOIN User u ON u.useUsername = a.aptCustomer
+    LEFT JOIN User m ON m.useUsername = a.aptMechanic
+    WHERE a.aptStatus IN ('READY FOR DELIVERY', 'DELIVERED') AND a.aptRecordStatus = 'approved' AND v.vehVehicleNumber = :vehVehicleNumber ORDER BY aptId DESC
+    """)
+    List<FinaceBillListRecord> findFinanceBillListRecordByAptStatus(Pageable pageable, String vehVehicleNumber);
+
+    @Query("""
+    SELECT COUNT(a.aptId)
+    FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
+    JOIN User u ON u.useUsername = a.aptCustomer
+    LEFT JOIN User m ON m.useUsername = a.aptMechanic
+    WHERE a.aptStatus IN ('READY FOR DELIVERY', 'DELIVERED') AND a.aptRecordStatus = 'approved' AND v.vehVehicleNumber = :vehVehicleNumber ORDER BY aptId DESC
+    """)
+    Integer findFinanceBillListRecordCountByAptStatusAndVehicleNumber(String vehVehicleNumber);
+
+    @Query("""
+    SELECT COUNT(a.aptId)
+    FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
+    JOIN User u ON u.useUsername = a.aptCustomer
+    LEFT JOIN User m ON m.useUsername = a.aptMechanic
+    WHERE a.aptStatus IN ('READY FOR DELIVERY', 'DELIVERED') AND a.aptRecordStatus = 'approved' ORDER BY aptId DESC
+    """)
+    Integer findFinanceBillListRecordCountByAptStatus();
 }
