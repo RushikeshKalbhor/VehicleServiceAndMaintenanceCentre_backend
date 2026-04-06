@@ -161,11 +161,12 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     @Query("""
     SELECT new com.example.vehicleservice.finance.records.FinaceBillListRecord(v.vehId, v.vehVehicleNumber, v.vehVehicleType, v.vehModel,
     a.aptId, a.aptDate, a.aptStatus, a.aptCreated, u.useTitle AS custTitle, u.useFirstName AS custFirstName, u.useSurname AS custSurname,
-    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname, jc.jcId)
+    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname, jc.jcId, b.bId)
     FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
     JOIN User u ON u.useUsername = a.aptCustomer
     LEFT JOIN JobCard jc ON jc.jcAptId = a.aptId AND jc.jcRecordStatus = 'approved'
     LEFT JOIN User m ON m.useUsername = a.aptMechanic
+    LEFT JOIN Bill b ON b.bAptId = a.aptId
     WHERE a.aptStatus IN ('READY FOR DELIVERY', 'DELIVERED') AND a.aptRecordStatus = 'approved' ORDER BY aptId DESC
     """)
     List<FinaceBillListRecord> findFinanceBillListRecordByAptStatus(Pageable pageable);
@@ -174,11 +175,12 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     @Query("""
     SELECT new com.example.vehicleservice.finance.records.FinaceBillListRecord(v.vehId, v.vehVehicleNumber, v.vehVehicleType, v.vehModel,
     a.aptId, a.aptDate, a.aptStatus, a.aptCreated, u.useTitle AS custTitle, u.useFirstName AS custFirstName, u.useSurname AS custSurname,
-    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname, jc.jcId)
+    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname, jc.jcId, b.bId)
     FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
     JOIN User u ON u.useUsername = a.aptCustomer
     LEFT JOIN JobCard jc ON jc.jcAptId = a.aptId AND jc.jcRecordStatus = 'approved'
     LEFT JOIN User m ON m.useUsername = a.aptMechanic
+    LEFT JOIN Bill b ON b.bAptId = a.aptId
     WHERE a.aptStatus IN ('READY FOR DELIVERY', 'DELIVERED') AND a.aptRecordStatus = 'approved' AND v.vehVehicleNumber = :vehVehicleNumber ORDER BY aptId DESC
     """)
     List<FinaceBillListRecord> findFinanceBillListRecordByAptStatus(Pageable pageable, String vehVehicleNumber);

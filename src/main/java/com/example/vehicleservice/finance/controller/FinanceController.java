@@ -55,4 +55,15 @@ public class FinanceController {
     public ResponseEntity<ResponseJson> addBill(@RequestBody @Valid AddBillJson addBillJson) {
         return ResponseEntity.status(HttpStatus.OK).body(financeService.addBill(addBillJson));
     }
+
+    @Operation(summary = "Get bill extra details", description = "This API is used to get bill extra details", security = @SecurityRequirement(name = "bearerAuth"))
+    @Parameter(name = "bId", description = "This is the bill id", schema = @Schema(type = "integer", minimum = "1", maximum = "8388607"), required = true)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows found/ not found",
+                    example = "finance.bill.details.found : Finance bill details found successfully, finance.bill.details.not.found : Finance bill details not found")))})
+    @GlobalApiResponses
+    @GetMapping("/add-bill/extra-details")
+    public ResponseEntity<ResponseJson> addBillExtraDetails(@RequestParam Integer bId) {
+        return ResponseEntity.status(HttpStatus.OK).body(financeService.addBillExtraDetails(bId));
+    }
 }

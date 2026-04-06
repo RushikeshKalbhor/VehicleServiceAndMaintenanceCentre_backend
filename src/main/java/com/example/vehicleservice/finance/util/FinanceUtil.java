@@ -30,17 +30,17 @@ public class FinanceUtil {
     public void addBillAndBillItem(AddBillJson addBillJson) {
         UserDetail userDetails = (UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Bill bill = new Bill();
-        bill.setbAptId(addBillJson.getBAptId());
-        bill.setbJcId(addBillJson.getBJcId());
-        bill.setbTotal(addBillJson.getBTotal());
-        bill.setbDiscount(addBillJson.getBDiscount());
-        bill.setbFinalTotal(addBillJson.getBFinalTotal());
-        bill.setbStatus("pending");
-        bill.setbRecordStatus("approved");
-        bill.setbCreated(LocalDateTime.now());
-        bill.setbCreatedBy(userDetails.getUsername());
+        bill.setBAptId(addBillJson.getBAptId());
+        bill.setBJcId(addBillJson.getBJcId());
+        bill.setBTotal(addBillJson.getBTotal());
+        bill.setBDiscount(addBillJson.getBDiscount());
+        bill.setBFinalTotal(addBillJson.getBFinalTotal());
+        bill.setBStatus("pending");
+        bill.setBRecordStatus("approved");
+        bill.setBCreated(LocalDateTime.now());
+        bill.setBCreatedBy(userDetails.getUsername());
         bill = billRepository.save(bill);
-        addBillItem(addBillJson.getAddBillItemJson(), bill.getbId(), userDetails.getUsername());
+        addBillItem(addBillJson.getAddBillItemJson(), bill.getBId(), userDetails.getUsername());
     }
 
     public void addBillItem(List<AddBillItemJson> addBillItemJsonList, Integer billId, String username) {

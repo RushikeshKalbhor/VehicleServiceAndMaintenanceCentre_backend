@@ -46,99 +46,99 @@ public class Bill {
     @Column(name = "b_updated_by")
     private String bUpdatedBy;
 
-    public Integer getbId() {
+    public Integer getBId() {
         return bId;
     }
 
-    public void setbId(Integer bId) {
+    public void setBId(Integer bId) {
         this.bId = bId;
     }
 
-    public Integer getbAptId() {
+    public Integer getBAptId() {
         return bAptId;
     }
 
-    public void setbAptId(Integer bAptId) {
+    public void setBAptId(Integer bAptId) {
         this.bAptId = bAptId;
     }
 
-    public Integer getbJcId() {
+    public Integer getBJcId() {
         return bJcId;
     }
 
-    public void setbJcId(Integer bJcId) {
+    public void setBJcId(Integer bJcId) {
         this.bJcId = bJcId;
     }
 
-    public Integer getbDiscount() {
+    public Integer getBDiscount() {
         return bDiscount;
     }
 
-    public void setbDiscount(Integer bDiscount) {
+    public void setBDiscount(Integer bDiscount) {
         this.bDiscount = bDiscount;
     }
 
-    public Double getbTotal() {
+    public Double getBTotal() {
         return bTotal;
     }
 
-    public void setbTotal(Double bTotal) {
+    public void setBTotal(Double bTotal) {
         this.bTotal = bTotal;
     }
 
-    public Double getbFinalTotal() {
+    public Double getBFinalTotal() {
         return bFinalTotal;
     }
 
-    public void setbFinalTotal(Double bFinalTotal) {
+    public void setBFinalTotal(Double bFinalTotal) {
         this.bFinalTotal = bFinalTotal;
     }
 
-    public String getbStatus() {
+    public String getBStatus() {
         return bStatus;
     }
 
-    public void setbStatus(String bStatus) {
+    public void setBStatus(String bStatus) {
         this.bStatus = bStatus;
     }
 
-    public String getbRecordStatus() {
+    public String getBRecordStatus() {
         return bRecordStatus;
     }
 
-    public void setbRecordStatus(String bRecordStatus) {
+    public void setBRecordStatus(String bRecordStatus) {
         this.bRecordStatus = bRecordStatus;
     }
 
-    public LocalDateTime getbCreated() {
+    public LocalDateTime getBCreated() {
         return bCreated;
     }
 
-    public void setbCreated(LocalDateTime bCreated) {
+    public void setBCreated(LocalDateTime bCreated) {
         this.bCreated = bCreated;
     }
 
-    public String getbCreatedBy() {
+    public String getBCreatedBy() {
         return bCreatedBy;
     }
 
-    public void setbCreatedBy(String bCreatedBy) {
+    public void setBCreatedBy(String bCreatedBy) {
         this.bCreatedBy = bCreatedBy;
     }
 
-    public LocalDateTime getbUpdated() {
+    public LocalDateTime getBUpdated() {
         return bUpdated;
     }
 
-    public void setbUpdated(LocalDateTime bUpdated) {
+    public void setBUpdated(LocalDateTime bUpdated) {
         this.bUpdated = bUpdated;
     }
 
-    public String getbUpdatedBy() {
+    public String getBUpdatedBy() {
         return bUpdatedBy;
     }
 
-    public void setbUpdatedBy(String bUpdatedBy) {
+    public void setBUpdatedBy(String bUpdatedBy) {
         this.bUpdatedBy = bUpdatedBy;
     }
 }
