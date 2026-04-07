@@ -161,7 +161,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     @Query("""
     SELECT new com.example.vehicleservice.finance.records.FinaceBillListRecord(v.vehId, v.vehVehicleNumber, v.vehVehicleType, v.vehModel,
     a.aptId, a.aptDate, a.aptStatus, a.aptCreated, u.useTitle AS custTitle, u.useFirstName AS custFirstName, u.useSurname AS custSurname,
-    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname, jc.jcId, b.bId)
+    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname, jc.jcId, b.bId, b.bFinalTotal)
     FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
     JOIN User u ON u.useUsername = a.aptCustomer
     LEFT JOIN JobCard jc ON jc.jcAptId = a.aptId AND jc.jcRecordStatus = 'approved'
@@ -175,7 +175,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     @Query("""
     SELECT new com.example.vehicleservice.finance.records.FinaceBillListRecord(v.vehId, v.vehVehicleNumber, v.vehVehicleType, v.vehModel,
     a.aptId, a.aptDate, a.aptStatus, a.aptCreated, u.useTitle AS custTitle, u.useFirstName AS custFirstName, u.useSurname AS custSurname,
-    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname, jc.jcId, b.bId)
+    m.useTitle AS mechanicTitle, m.useFirstName AS mechanicFirstName, m.useSurname AS mechanicSurname, jc.jcId, b.bId, b.bFinalTotal)
     FROM Appointment a JOIN Vehicle v ON v.vehId = a.aptVehId
     JOIN User u ON u.useUsername = a.aptCustomer
     LEFT JOIN JobCard jc ON jc.jcAptId = a.aptId AND jc.jcRecordStatus = 'approved'
