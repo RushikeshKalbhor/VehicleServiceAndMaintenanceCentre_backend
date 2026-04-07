@@ -42,7 +42,7 @@ public class PaymentController {
                     example = "create.order.success : Order created successfully")))})
     @GlobalApiResponses
     @PostMapping("/create-order")
-    public ResponseEntity<ResponseJson> createOrder(@RequestParam @Min(1) @Max(8388607) Double amount) throws RazorpayException {
+    public ResponseEntity<ResponseJson> createOrder(@RequestParam Double amount) throws RazorpayException {
         return ResponseEntity.status(HttpStatus.OK).body(paymentService.createOrder(amount));
     }
 
