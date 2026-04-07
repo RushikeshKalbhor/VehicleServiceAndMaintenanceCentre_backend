@@ -226,3 +226,17 @@ CREATE TABLE IF NOT EXISTS `bill_items` (
 PRIMARY KEY (`bi_id`))
 ENGINE = InnoDB
 COMMENT = 'Stores individual bill item details including service name, quantity, rate, total, and audit information.';
+
+CREATE TABLE IF NOT EXISTS `payments` (
+    `pay_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key for the payments table',
+    `pay_apt_id` MEDIUMINT UNSIGNED NULL COMMENT 'Appointment ID linked to this payment',
+    `pay_amount` DECIMAL(10,2) NOT NULL COMMENT 'Payment amount',
+    `pay_status` VARCHAR(50) NOT NULL COMMENT 'Status of the payment (e.g., SUCCESS, FAILED)',
+    `pay_transaction_id` VARCHAR(100) NULL COMMENT 'Transaction ID from payment gateway',
+    `pay_date` DATETIME NOT NULL COMMENT 'Timestamp when the payment was made',
+    `pay_record_status` ENUM('approved', 'wrong', 'updated') NOT NULL COMMENT 'Record status of the payment',
+    `pay_created` DATETIME NOT NULL COMMENT 'Timestamp when the payment record was created',
+    `pay_created_by` VARCHAR(40) NOT NULL COMMENT 'Username of the user who created the payment',
+PRIMARY KEY (`pay_id`))
+ENGINE = InnoDB
+COMMENT = 'Stores payment details including amount, status, transaction ID, and audit information.';

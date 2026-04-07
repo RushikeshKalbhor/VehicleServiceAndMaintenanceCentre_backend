@@ -5,8 +5,12 @@ import com.example.vehicleservice.finance.json.AddBillItemJson;
 import com.example.vehicleservice.finance.json.AddBillJson;
 import com.example.vehicleservice.finance.model.Bill;
 import com.example.vehicleservice.finance.model.BillItem;
+import com.example.vehicleservice.finance.model.Payment;
 import com.example.vehicleservice.finance.repository.BillItemRepository;
 import com.example.vehicleservice.finance.repository.BillRepository;
+import com.example.vehicleservice.finance.repository.PaymentRepository;
+import com.example.vehicleservice.jobcard.repository.JobCardRepository;
+import com.example.vehicleservice.jobcard.service.JobCardService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -21,10 +25,21 @@ public class FinanceUtil {
     private final BillItemRepository billItemRepository;
     
     private final BillRepository billRepository;
+
+    private final PaymentRepository paymentRepository;
+
+    private final JobCardService jobCardService;
+
+    private final JobCardRepository jobCardRepository;
     
-    public FinanceUtil(BillItemRepository billItemRepository, BillRepository billRepository) {
+    public FinanceUtil(BillItemRepository billItemRepository, BillRepository billRepository,
+                       PaymentRepository paymentRepository, JobCardService jobCardService,
+                       JobCardRepository jobCardRepository) {
         this.billItemRepository = billItemRepository;
         this.billRepository = billRepository;
+        this.paymentRepository = paymentRepository;
+        this.jobCardService = jobCardService;
+        this.jobCardRepository = jobCardRepository;
     }
     
     
@@ -80,6 +95,29 @@ public class FinanceUtil {
 
         // add new bill item
         addBillItem(addBillJson.getAddBillItemJson(), addBillJson.getBId(), userDetails.getUsername());
+    }
 
+    public void addPayment(Integer payAptId, Double payAmount, String payStatus, String payTransactionId) {
+        UserDetail userDetails = (UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Payment payment = new Payment();
+        payment.setPayAptId(payAptId);
+        payment.setPayAmount(payAmount);
+        payment.setPayStatus(payStatus);
+        payment.setPayTransactionId(payTransactionId);
+        payment.setPayDate(LocalDateTime.now());
+        payment.setPayRecordStatus("approved");
+        payment.setPayCreated(LocalDateTime.now());
+        payment.setPayCreatedBy(userDetails.getUsername());
+        paymentRepository.save(payment);
+    }
+
+    public void markBillPaid(Integer aptId) {
+        Double payAmountSum = paymentRepository.findSumPayAmountByPayAptId(aptId);
+        Double bFinalTotal = billRepository.findBFinalTotalByBAptId(aptId);
+        if (payAmountSum != null && bFinalTotal != null && payAmountSum >= bFinalTotal) {
+            Integer jcId = jobCardRepository.findJcIdByJcAptId(aptId);
+            jobCardService.updateService(jcId, "DELIVERED", null);
+        }
     }
 }

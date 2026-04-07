@@ -1,5 +1,6 @@
 package com.example.vehicleservice.finance.service;
 
+import com.example.vehicleservice.finance.util.FinanceUtil;
 import com.example.vehicleservice.finance.util.RazorpayConfig;
 import com.example.vehicleservice.general.json.ResponseJson;
 import com.razorpay.Order;
@@ -19,9 +20,11 @@ import java.util.Map;
 public class PaymentService {
 
     private final RazorpayConfig razorpayConfig;
+    private final FinanceUtil financeUtil;
 
-    public PaymentService(RazorpayConfig razorpayConfig) {
+    public PaymentService(RazorpayConfig razorpayConfig, FinanceUtil financeUtil) {
         this.razorpayConfig = razorpayConfig;
+        this.financeUtil = financeUtil;
     }
 
     public ResponseJson createOrder(Double amount) throws RazorpayException {
@@ -49,11 +52,22 @@ public class PaymentService {
         String orderId = payload.get("razorpay_order_id");
         String paymentId = payload.get("razorpay_payment_id");
         String signature = payload.get("razorpay_signature");
+        String payAptId = payload.get("payAptId");
+        String payAmount = payload.get("payAmount");
+
+        if (payAptId == null || payAmount == null) {
+            return new ResponseJson("payAptId.and.payAmount.is.required");
+        }
 
         String secret = razorpayConfig.getSecret();
         String generatedSignature = hmacSha256(orderId + "|" + paymentId, secret);
-
-        return new ResponseJson(generatedSignature.equals(signature) ? "payment.verified.success" : "invalid.signature");
+        if (generatedSignature.equals(signature)) {
+            financeUtil.addPayment(Integer.valueOf(payAptId), Double.valueOf(payAmount), "paid", paymentId);
+            financeUtil.markBillPaid(Integer.valueOf(payAptId));
+            return new ResponseJson("payment.verified.success");
+        }
+        financeUtil.addPayment(Integer.valueOf(payAptId), Double.valueOf(payAmount), "failed", null);
+        return new ResponseJson("invalid.signature");
     }
 
     public String hmacSha256(String data, String key) throws NoSuchAlgorithmException, InvalidKeyException {
