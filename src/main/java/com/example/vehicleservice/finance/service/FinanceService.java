@@ -1,6 +1,7 @@
 package com.example.vehicleservice.finance.service;
 
 import com.example.vehicleservice.appointment.repository.AppointmentRepository;
+import com.example.vehicleservice.config.security.UserDetail;
 import com.example.vehicleservice.finance.json.AddBillJson;
 import com.example.vehicleservice.finance.model.Bill;
 import com.example.vehicleservice.finance.model.BillItem;
@@ -11,6 +12,7 @@ import com.example.vehicleservice.finance.util.FinanceUtil;
 import com.example.vehicleservice.general.json.ResponseJson;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -100,5 +102,36 @@ public class FinanceService {
         financeUtil.updateBillItem(addBillJson);
 
         return new ResponseJson("finance.bill.edit.success");
+    }
+
+    public ResponseJson getFinanceCustomerBillList(String vehicleNumber, Integer pageNumber) {
+        UserDetail userDetails = (UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        pageNumber = pageNumber == null ? 1 : pageNumber;
+        Pageable pageable = PageRequest.of(pageNumber - 1, 10);
+        List<FinaceBillListRecord> financeBillListRecordList;
+        if (vehicleNumber != null &&  !vehicleNumber.isEmpty()) {
+            financeBillListRecordList = appointmentRepository.findFinanceBillListRecordByAptStatusAndAptCustomer(pageable, vehicleNumber, userDetails.getUsername());
+        } else {
+            financeBillListRecordList = appointmentRepository.findFinanceBillListRecordByAptStatusAndAptCustomers(pageable, userDetails.getUsername());
+        }
+
+        if (financeBillListRecordList.isEmpty()) {
+            return new ResponseJson("finance.bill.list.not.found");
+        }
+
+        Map<String, Object> entityMap = new HashMap<>();
+        entityMap.put("financeCustomerBillListRecordList", financeBillListRecordList);
+        if (pageNumber == 1) {
+            Integer financeBillListCount = 0;
+            if (vehicleNumber != null &&  !vehicleNumber.isEmpty()) {
+                financeBillListCount = appointmentRepository.findFinanceBillListRecordCountByAptStatusAndAptCustomer(vehicleNumber, userDetails.getUsername());
+            } else {
+                financeBillListCount = appointmentRepository.findFinanceBillListRecordCountByAptStatusAndAptCustomers(userDetails.getUsername());
+            }
+            entityMap.put("financeBillListCount", financeBillListCount);
+        }
+        return new ResponseJson("finance.bill.list.found", entityMap);
+
     }
 }

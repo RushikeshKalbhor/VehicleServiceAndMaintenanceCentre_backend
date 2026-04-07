@@ -82,4 +82,17 @@ public class FinanceController {
     public ResponseEntity<ResponseJson> editBill(@RequestBody @Valid AddBillJson addBillJson) {
         return ResponseEntity.status(HttpStatus.OK).body(financeService.editBill(addBillJson));
     }
+
+    @Operation(summary = "Get finance customer bill list", description = "This API is used to get finance customer bill list", security = @SecurityRequirement(name = "bearerAuth"))
+    @Parameter(name = "vehicleNumber", description = "This is the vehicle number", schema = @Schema(type = "string", minLength = 6, maxLength = 10), required = false)
+    @Parameter(name = "pageNumber", description = "This is the page number", schema = @Schema(type = "integer", minimum = "1", maximum = "8388607"), required = false)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows found/not found",
+                    example = "finance.bill.list.not.found : Finance bill list found successfully, " +
+                            "finance.bill.list.found : Finance bill list not found")))})
+    @GlobalApiResponses
+    @GetMapping("/finance/customer/bill/list")
+    public ResponseEntity<ResponseJson> getFinanceCustomerBillList(@RequestParam (required = false) @Size(min = 6, max = 10) String vehicleNumber, @RequestParam (required = false) @Min(1) @Max(8388607) Integer pageNumber) {
+        return ResponseEntity.status(HttpStatus.OK).body(financeService.getFinanceCustomerBillList(vehicleNumber, pageNumber));
+    }
 }
