@@ -88,10 +88,10 @@ public class FinanceService {
             return new ResponseJson("bId.is.mandatory");
         }
 
-        boolean requiredBiId = addBillJson.getAddBillItemJson().stream().anyMatch(billItemJson -> billItemJson.getBiId() == null);
-        if (requiredBiId) {
-            return new ResponseJson("biId.is.mandatory");
-        }
+//        boolean requiredBiId = addBillJson.getAddBillItemJson().stream().anyMatch(billItemJson -> billItemJson.getBiId() == null);
+//        if (requiredBiId) {
+//            return new ResponseJson("biId.is.mandatory");
+//        }
         Bill bill = billRepository.findBillByBId(addBillJson.getBId());
 
         if (bill == null) {

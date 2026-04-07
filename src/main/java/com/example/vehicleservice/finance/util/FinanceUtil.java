@@ -13,6 +13,7 @@ import com.example.vehicleservice.jobcard.repository.JobCardRepository;
 import com.example.vehicleservice.jobcard.service.JobCardService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -86,12 +87,13 @@ public class FinanceUtil {
         billRepository.save(bill);
     }
 
+    @Transactional
     public void updateBillItem(AddBillJson addBillJson) {
         UserDetail userDetails = (UserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         // delete existing bill item
-        List<Integer> billItemIds = addBillJson.getAddBillItemJson().stream().map(AddBillItemJson :: getBiId).filter(Objects::nonNull).toList();
-        billItemRepository.deleteAllById(billItemIds);
+//        List<Integer> billItemIds = addBillJson.getAddBillItemJson().stream().map(AddBillItemJson :: getBiId).filter(Objects::nonNull).toList();
+        billItemRepository.deleteAllByBiBId(addBillJson.getBId());
 
         // add new bill item
         addBillItem(addBillJson.getAddBillItemJson(), addBillJson.getBId(), userDetails.getUsername());
