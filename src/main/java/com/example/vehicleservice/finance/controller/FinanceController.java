@@ -49,7 +49,10 @@ public class FinanceController {
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description ="<b>Required json: AddBillJson</b> <br>")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(description = "Shows Success",
-                    example = "finance.bill.add.success : Finance bill added successfully")))})
+                    example = """
+                            finance.bill.add.success : Finance bill added successfully,
+                            bill.exist.for.given.appointment : Bill already created for the given appointment
+                            """)))})
     @GlobalApiResponses
     @PostMapping("/add-bill")
     public ResponseEntity<ResponseJson> addBill(@RequestBody @Valid AddBillJson addBillJson) {

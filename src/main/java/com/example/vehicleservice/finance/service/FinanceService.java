@@ -64,6 +64,11 @@ public class FinanceService {
     }
 
     public ResponseJson addBill(AddBillJson addBillJson) {
+
+        boolean billExist = billRepository.findBillByBAptId(addBillJson.getBAptId());
+        if (billExist) {
+            return new ResponseJson("bill.exist.for.given.appointment");
+        }
         financeUtil.addBillAndBillItem(addBillJson);
         return new ResponseJson("finance.bill.add.success");
     }

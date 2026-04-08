@@ -13,4 +13,7 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
 
     @Query("SELECT bFinalTotal FROM Bill WHERE bAptId = :bAptId AND bRecordStatus = 'approved'")
     Double findBFinalTotalByBAptId(Integer bAptId);
+
+    @Query("SELECT COUNT(bId) > 0 FROM Bill WHERE bAptId = :bAptId AND bRecordStatus = 'approved'")
+    boolean findBillByBAptId(Integer bAptId);
 }
