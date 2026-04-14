@@ -169,4 +169,32 @@ public class EmailService {
 
         return message;
     }
+
+    public SimpleMailMessage getAppointmentDeliveredEmail(User user, Integer appointmentId, String date) {
+
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setTo(user.getUseEmail());
+        message.setSubject("Vehicle Delivered Successfully");
+
+        message.setText(
+                "Dear " + user.getUseFullName() + ",\n\n" +
+
+                        "We are pleased to inform you that your vehicle has been delivered.\n\n" +
+
+                        "Appointment Details:\n" +
+                        "Appointment ID : " + appointmentId + "\n" +
+                        "Date           : " + date + "\n" +
+
+
+                        "If you have any questions or need to make changes, feel free to contact us.\n\n" +
+
+                        "We look forward to serving you.\n\n" +
+
+                        "Regards,\n" +
+                        "Vehicle Service and Maintenance Centre Team"
+        );
+
+        return message;
+    }
 }

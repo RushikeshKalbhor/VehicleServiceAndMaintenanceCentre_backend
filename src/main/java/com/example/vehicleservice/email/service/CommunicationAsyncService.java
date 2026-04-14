@@ -50,4 +50,17 @@ public class CommunicationAsyncService {
             javaMailSender.send(message);
         }
     }
+
+    @Async("asyncExecutor")
+    public void sendDeliveredVehicleEmail(Integer aptId) {
+        String emailSetting = vehiclePreferenceRepository.findVehiclePreferenceCecValueByCecName("email_setting");
+        Appointment appointment = appointmentRepository.findAppointmentByAptId(aptId);
+        User user = userRepository.findByUseUsername(appointment.getAptCustomer());
+
+        if ("true".equals(emailSetting)) {
+            JavaMailSender javaMailSender = emailService.getMailSenderFromDb();
+            SimpleMailMessage message = emailService.getAppointmentDeliveredEmail(user, aptId, appointment.getAptDate().toString());
+            javaMailSender.send(message);
+        }
+    }
 }

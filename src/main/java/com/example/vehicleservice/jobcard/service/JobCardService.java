@@ -2,6 +2,7 @@ package com.example.vehicleservice.jobcard.service;
 
 import com.example.vehicleservice.appointment.repository.AppointmentRepository;
 import com.example.vehicleservice.config.security.UserDetail;
+import com.example.vehicleservice.email.service.CommunicationAsyncService;
 import com.example.vehicleservice.general.json.ResponseJson;
 import com.example.vehicleservice.jobcard.model.JobCard;
 import com.example.vehicleservice.jobcard.repository.JobCardRepository;
@@ -16,10 +17,13 @@ public class JobCardService {
 
     private final JobCardRepository jobCardRepository;
     private final AppointmentRepository appointmentRepository;
+    private final CommunicationAsyncService communicationAsyncService;
 
-    public JobCardService(JobCardRepository jobCardRepository, AppointmentRepository appointmentRepository) {
+    public JobCardService(JobCardRepository jobCardRepository, AppointmentRepository appointmentRepository,
+                          CommunicationAsyncService communicationAsyncService) {
         this.jobCardRepository = jobCardRepository;
         this.appointmentRepository = appointmentRepository;
+        this.communicationAsyncService = communicationAsyncService;
     }
 
     // ADMIN – create job card after assigning mechanic
@@ -65,7 +69,10 @@ public class JobCardService {
             }
             case "QUALITY_CHECK" -> jobCard.setJcProgressPercentage(80);
             case "READY_FOR_DELIVERY" -> jobCard.setJcProgressPercentage(95);
-            case "DELIVERED" -> jobCard.setJcProgressPercentage(100);
+            case "DELIVERED" -> {
+                jobCard.setJcProgressPercentage(100);
+                communicationAsyncService.sendDeliveredVehicleEmail(jobCard.getJcAptId());
+            }
             default -> {
                 break;
             }

@@ -32,5 +32,5 @@ asyncExecutor:
   threadNamePrefix : AsyncExecutor- #prefix used for naming the threads
 
 razorpay:
-  key: rzp_test_SZUAHpgGT #fucyr
-  secret: pIffKC7jadCKSrAKq #3QmeReK
+  key: rzp_test_SZUAHpgGTfucyr
+  secret: pIffKC7jadCKSrAKq3QmeReK
